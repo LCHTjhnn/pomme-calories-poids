@@ -1,0 +1,970 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f6f7ef">
+  <meta name="description" content="Pomme : votre carnet de calories, d’aliments favoris et de pesées. Sans compte, avec vos données sur votre appareil.">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="referrer" content="no-referrer">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Pomme">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon-192.png">
+  <link rel="manifest" href="./manifest.webmanifest">
+  <title>Pomme — Calories & poids</title>
+  <style>:root {
+  color-scheme: light;
+  --bg: #f6f7ef;
+  --paper: #fff;
+  --ink: #223d2b;
+  --muted: #657361;
+  --line: #dce4d5;
+  --accent: #256044;
+  --on: #fff;
+  --soft: #e6eedb;
+  --key: #edf1e6;
+  --danger: #a33d32;
+  --danger-soft: #faeee9;
+  --shadow: 0 20px 70px #1a372610;
+  --radius: 24px;
+  --nav-height: 76px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+html { min-width: 280px; scroll-padding-bottom: 120px; }
+body {
+  margin: 0;
+  background: var(--soft);
+  color: var(--ink);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+}
+button, input, select, textarea { font: inherit; color: inherit; }
+button {
+  cursor: pointer;
+  min-height: 44px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+button:disabled { cursor: default; opacity: .45; }
+button:active:not(:disabled) { opacity: .78; }
+button, input, select, textarea { -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+a { color: var(--accent); text-underline-offset: 3px; }
+button svg, .topbar svg { width: 20px; height: 20px; flex-shrink: 0; }
+svg { vertical-align: middle; }
+h1, h2, h3, p, figure { margin: 0; }
+h1 { font-size: 30px; font-weight: 730; line-height: 1.15; letter-spacing: -1px; }
+h2 { font-size: 19px; font-weight: 670; line-height: 1.3; letter-spacing: -.4px; }
+h3 { font-size: 16px; font-weight: 650; line-height: 1.3; letter-spacing: -.2px; }
+strong, b { font-weight: 650; }
+[hidden] { display: none !important; }
+.app {
+  width: 100%;
+  max-width: 480px;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0 auto;
+  padding-bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+  background: var(--bg);
+  box-shadow: var(--shadow);
+}
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: calc(19px + env(safe-area-inset-top, 0px)) 22px 18px;
+}
+.brand { display: inline-flex; align-items: center; gap: 8px; flex-shrink: 0; color: var(--ink); font-size: 19px; font-weight: 750; letter-spacing: -.6px; text-decoration: none; }
+.brand-caption { display: block; margin-top: 1px; color: var(--muted); font-size: 7.5px; font-weight: 600; line-height: 1.3; letter-spacing: .6px; white-space: nowrap; }
+.brand-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 13px; background: var(--soft); font-size: 21px; color: var(--accent); }
+.save-state { display: flex; flex: 1; align-items: center; justify-content: flex-end; gap: 5px; min-width: 0; max-width: 44%; color: var(--muted); font-size: 10px; line-height: 1.4; text-align: right; }
+.save-state svg { width: 13px; height: 13px; }
+.save-state.error, .save-state.has-error, .save-state[data-state="error"] { color: var(--danger); }
+main#main { padding: 3px 22px 32px; outline: none; }
+.app-footer { padding: 0 20px 22px; color: var(--muted); font-size: 10px; text-align: center; }
+.page-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+.page-head > div { min-width: 0; }
+.subtitle, .page-head p { margin-top: 5px; color: var(--muted); font-size: 13px; }
+.row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.row > *, .two-col > * { min-width: 0; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.tiny { font-size: 11px; }
+.section-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin: 24px 0 10px; }
+.section-head h2, .section-head h3 { font-size: 17px; }
+.section-head .text-btn { flex-shrink: 0; }
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 44px;
+  height: 44px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--paper);
+}
+.text-btn { display: inline-flex; align-items: center; justify-content: center; gap: 5px; padding: 8px 4px; border: 0; background: transparent; color: var(--accent); font-size: 13px; font-weight: 600; }
+.primary, .secondary, .danger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 51px;
+  padding: 12px 16px;
+  border: 1px solid transparent;
+  border-radius: 16px;
+  font-size: 15px;
+  font-weight: 650;
+  text-align: center;
+}
+.primary { background: var(--accent); color: var(--on); }
+.secondary { border-color: var(--line); background: var(--paper); color: var(--ink); }
+.danger { border-color: var(--danger); background: var(--danger-soft); color: var(--danger); }
+.text-btn.danger, .icon-btn.danger { width: auto; min-width: 44px; min-height: 44px; background: transparent; border: 0; color: var(--danger); }
+.panel { margin: 16px 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.panel > :first-child { margin-top: 0; }
+.panel > :last-child { margin-bottom: 0; }
+.notice { margin: 14px 0; padding: 13px 15px; border-radius: 15px; background: var(--soft); color: var(--ink); font-size: 13px; overflow-wrap: anywhere; }
+.notice p + p { margin-top: 8px; }
+.notice .text-btn { margin-top: 2px; padding-left: 0; }
+.field { display: block; min-width: 0; margin: 17px 0; }
+.field > label, label.field > span, .field > span { display: block; margin: 0 0 7px; color: var(--ink); font-size: 13px; font-weight: 550; }
+.field input, .field select, .field textarea, input.dateinput {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 51px;
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 16px;
+  line-height: 1.35;
+  box-shadow: none;
+}
+.field input::placeholder, .searchbox input::placeholder { color: var(--muted); opacity: .85; }
+.field input[aria-invalid="true"] { border-color: var(--danger); }
+.field input[type="date"], input.dateinput { -webkit-appearance: none; appearance: none; }
+.field input[type="date"]::-webkit-date-and-time-value, input.dateinput::-webkit-date-and-time-value { text-align: left; min-height: 1.35em; }
+.field small { display: block; margin-top: 7px; color: var(--muted); font-size: 12px; font-weight: 400; }
+.two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.two-col .field { margin-top: 12px; }
+.datebar { display: grid; grid-template-columns: 44px minmax(0, 1fr) 44px; align-items: center; gap: 8px; margin: -3px 0 17px; }
+.datebar > label { min-width: 0; }
+.datebar > .text-btn { grid-column: 1 / -1; justify-self: end; margin: -5px 0 -8px; }
+.datebar .dateinput, .datebar input[type="date"] { display: block; width: 100%; min-width: 0; max-width: 100%; min-height: 44px; height: 44px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 13px; background: var(--paper); font-size: 16px; -webkit-appearance: none; appearance: none; }
+.datebar input[type="date"]::-webkit-date-and-time-value { min-height: 1.35em; text-align: center; }
+.datebar .icon-btn, .prevnext { width: 44px; min-width: 44px; height: 44px; border-radius: 13px; }
+.prevnext { display: grid; place-items: center; padding: 0; border: 1px solid var(--line); background: var(--paper); }
+.ring-summary { display: flex; align-items: center; justify-content: center; gap: 22px; margin: 0 0 18px; padding: 23px 15px; border-radius: var(--radius); background: var(--paper); }
+.ring { --progress: 0%; flex-shrink: 0; width: clamp(132px, 38vw, 168px); height: clamp(132px, 38vw, 168px); border-radius: 50%; background: var(--soft); background: conic-gradient(from -90deg, var(--accent) 0 var(--progress), var(--soft) var(--progress) 100%); padding: 10px; }
+.ring-inner { display: flex; width: 100%; height: 100%; align-items: center; justify-content: center; flex-direction: column; gap: 1px; border-radius: 50%; background: var(--paper); }
+.ring-inner strong { font-size: clamp(29px, 8vw, 36px); font-weight: 730; line-height: 1.1; letter-spacing: -1.2px; font-variant-numeric: tabular-nums; }
+.ring-inner small { color: var(--muted); font-size: 12px; }
+.ring-side { min-width: 0; max-width: 155px; }
+.ring-side > strong { display: block; font-size: clamp(27px, 7.5vw, 33px); font-weight: 700; line-height: 1.15; letter-spacing: -1px; font-variant-numeric: tabular-nums; }
+.ring-side small, .ring-side > span { display: block; margin-top: 3px; color: var(--muted); font-size: 12px; }
+.ring-side .text-btn { justify-content: flex-start; margin-top: 5px; padding-left: 0; font-size: 11px; text-align: left; font-weight: 450; }
+.ring-summary.over .ring, .ring-summary[data-over="true"] .ring { background: conic-gradient(var(--danger) 0 100%); }
+.favorite-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.favorite-card { display: flex; flex-direction: column; align-items: flex-start; min-width: 0; min-height: 116px; padding: 12px 10px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); text-align: left; }
+.food-emoji { display: block; flex-shrink: 0; margin: 0 0 7px; font-size: 26px; line-height: 1.15; }
+.favorite-card .food-name, .favorite-card b { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; margin-bottom: 4px; font-size: 12px; font-weight: 650; line-height: 1.3; overflow-wrap: anywhere; }
+.favorite-card small, .favorite-card .tiny { margin-top: auto; color: var(--muted); font-size: 10px; }
+.entry-display { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 68px; padding: 10px 3px 12px; }
+.entry-display > div { min-width: 0; }
+.entry-display strong, .entry-display output { font-size: 34px; font-weight: 680; line-height: 1.1; letter-spacing: -.8px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.entry-display small { color: var(--muted); font-size: 12px; font-weight: 400; letter-spacing: 0; }
+.keypad { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; margin: 0 0 11px; }
+.keypad button { display: grid; place-items: center; min-height: 52px; padding: 9px; border: 0; border-radius: 15px; background: var(--key); color: var(--ink); font-size: 23px; font-weight: 500; }
+.keypad button[data-key="C"], .keypad button[data-key="clear"], .keypad button[data-key="del"], .keypad button[data-key="backspace"], .keypad .key-secondary { color: var(--muted); font-size: 17px; }
+.meal-entries, .weight-list, .day-list, .food-list { padding: 0; list-style: none; }
+.entry-row { display: flex; align-items: center; gap: 10px; min-height: 76px; padding: 11px 0; border-bottom: 1px solid var(--line); }
+.entry-row > .food-emoji { margin: 0; font-size: 23px; }
+.entry-text { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.entry-text strong, .entry-text b { display: block; font-size: 14px; }
+.entry-text .small, .entry-text small { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+.entry-actions { display: flex; flex-shrink: 0; align-items: center; gap: 2px; }
+.entry-calories { flex-shrink: 0; color: var(--ink); font-size: 15px; font-weight: 650; line-height: 1.3; text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.entry-calories small { display: block; margin-top: 1px; color: var(--muted); font-size: 10px; font-weight: 400; }
+.entry-actions .icon-btn { border: 0; background: transparent; color: var(--muted); }
+.entry-actions strong { font-size: 14px; font-variant-numeric: tabular-nums; }
+.entry-actions small { font-size: 10px; color: var(--muted); }
+.tabbar {
+  position: fixed;
+  z-index: 20;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 2px;
+  width: 100%;
+  max-width: 480px;
+  min-height: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px));
+  padding: 9px 10px calc(9px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+}
+.tabbar button { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; min-width: 0; min-height: 56px; padding: 7px 1px; border: 0; border-radius: 14px; background: transparent; color: var(--muted); font-size: 10px; line-height: 1.2; }
+.tabbar button svg { width: 21px; height: 21px; }
+.tabbar button[aria-current="page"], .tabbar button[aria-selected="true"], .tabbar button.active { background: var(--soft); color: var(--accent); font-weight: 650; }
+.searchbox { display: flex; align-items: center; gap: 9px; margin: 15px 0 12px; padding: 0 13px; border: 1px solid var(--line); border-radius: 15px; background: var(--paper); }
+.searchbox svg { width: 19px; height: 19px; color: var(--muted); flex-shrink: 0; }
+.searchbox input { width: 100%; min-width: 0; min-height: 50px; padding: 10px 0; border: 0; border-radius: 0; background: transparent; font-size: 16px; }
+.searchbox:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.searchbox input:focus-visible { outline: none; }
+.segmented { display: flex; gap: 5px; margin: 13px 0 16px; padding: 4px; border-radius: 15px; background: var(--soft); }
+.segmented button { flex: 1; min-width: 0; min-height: 44px; padding: 9px 7px; border: 0; border-radius: 11px; background: transparent; font-size: 12px; font-weight: 550; }
+.segmented button[aria-pressed="true"], .segmented button[aria-selected="true"], .segmented button.active { background: var(--paper); color: var(--accent); box-shadow: 0 2px 8px #16302008; }
+.food-list { display: flex; flex-direction: column; gap: 9px; margin: 0; }
+.food-list + .secondary { margin-top: 17px; }
+.food-row { display: flex; align-items: center; gap: 0; min-width: 0; padding: 6px; border: 1px solid var(--line); border-radius: 19px; background: var(--paper); }
+.food-main { display: flex; flex: 1; align-items: center; gap: 10px; min-width: 0; min-height: 62px; padding: 8px 6px; border: 0; border-radius: 13px; background: transparent; text-align: left; }
+.food-main > span:not(.food-emoji), .food-main > div { min-width: 0; }
+.food-main .food-emoji { margin: 0; font-size: 26px; }
+.food-main .food-name, .food-main strong, .food-main b { display: block; font-size: 13px; font-weight: 600; line-height: 1.35; overflow-wrap: anywhere; }
+.food-meta { display: block; margin-top: 4px; color: var(--muted); font-size: 11px; }
+.star { display: grid; place-items: center; flex-shrink: 0; width: 44px; height: 44px; padding: 0; border: 0; border-radius: 13px; background: transparent; color: var(--muted); font-size: 21px; }
+.star[aria-pressed="true"], .star.active { color: var(--accent); background: var(--soft); }
+.food-row > .icon-btn { width: 44px; height: 44px; border: 0; background: transparent; color: var(--muted); }
+.food-row > .star[aria-pressed="true"] { background: var(--soft); color: var(--accent); }
+.food-row > .star[aria-pressed="true"] svg { fill: currentColor; }
+.weight-summary { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: baseline; gap: 6px 12px; margin: 6px 0 20px; }
+.weight-summary > :first-child { grid-column: 1; grid-row: 1; }
+.weight-summary > strong { grid-column: 1 / -1; grid-row: 2; }
+.weight-summary > :last-child:not(:first-child) { grid-column: 2; grid-row: 1; max-width: 180px; }
+.weight-summary strong { display: block; font-size: 43px; line-height: 1.15; font-weight: 720; letter-spacing: -1.7px; font-variant-numeric: tabular-nums; }
+.weight-summary strong small { font-size: 16px; font-weight: 400; letter-spacing: 0; color: var(--muted); }
+.weight-summary p, .weight-summary .small { margin-top: 4px; color: var(--muted); font-size: 12px; }
+.weight-summary > :last-child:not(:first-child) { text-align: right; }
+svg.weight-chart { display: block; width: 100%; max-width: 100%; height: 220px; overflow: visible; color: var(--accent); }
+.weight-chart text { font-family: inherit; fill: var(--muted); font-size: 11px; }
+.weight-chart .grid { stroke: var(--line); }
+.weight-chart .line { stroke: var(--accent); fill: none; }
+.weight-chart .point { fill: var(--accent); stroke: var(--paper); stroke-width: 2px; }
+figure > figcaption { margin: 10px 0 0; color: var(--muted); font-size: 11px; }
+.weight-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 65px; padding: 9px 0; border-bottom: 1px solid var(--line); }
+.weight-row > :first-child { min-width: 0; }
+.weight-row strong { font-size: 16px; font-variant-numeric: tabular-nums; }
+.weight-row .icon-btn { border: 0; background: transparent; color: var(--muted); }
+.weight-row button:not(.icon-btn) { border: 0; background: transparent; text-align: left; }
+.day-list { display: flex; flex-direction: column; gap: 10px; margin: 18px 0; }
+.day-row { display: block; width: 100%; padding: 16px; border: 1px solid var(--line); border-radius: 19px; background: var(--paper); color: var(--ink); text-align: left; }
+.day-row .row { align-items: baseline; }
+.day-row strong { font-variant-numeric: tabular-nums; }
+.day-row .small, .day-row .tiny { margin-top: 5px; color: var(--muted); }
+.day-progress { position: relative; height: 7px; margin: 12px 0 9px; overflow: hidden; border-radius: 8px; background: var(--soft); }
+.day-progress > span, .day-progress > div { display: block; height: 100%; max-width: 100%; border-radius: inherit; background: var(--accent); }
+.settings-section { margin: 21px 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--paper); }
+.settings-section > h2, .settings-section > h3 { margin-bottom: 12px; font-size: 17px; }
+.settings-section > summary { min-height: 44px; padding: 10px 0; color: var(--accent); font-size: 14px; font-weight: 600; cursor: pointer; }
+.settings-section > .primary { margin-top: 15px; margin-bottom: 12px; }
+.settings-section > .secondary + .tiny { margin-top: 12px; }
+.settings-section .secondary + .secondary, .settings-section .secondary + .danger { margin-top: 9px; }
+.settings-section p + p { margin-top: 9px; }
+.settings-section .field:first-child { margin-top: 0; }
+.settings-section > :last-child { margin-bottom: 0; }
+.source-note, .backup-info, .install-note { color: var(--muted); font-size: 12px; line-height: 1.55; overflow-wrap: anywhere; }
+.source-note { margin-top: 18px; }
+.backup-info, .install-note { margin: 12px 0; }
+.source-note a { overflow-wrap: anywhere; }
+.install-note ol { padding-left: 20px; margin: 10px 0; }
+.install-note li + li { margin-top: 6px; }
+.source-note summary, .install-note summary { min-height: 44px; padding: 12px 0; cursor: pointer; color: var(--accent); font-weight: 550; }
+.source-note details p, .install-note details p { margin-top: 8px; }
+dialog#dialog { width: calc(100% - 24px); max-width: 440px; max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); margin: auto; padding: 0; overflow-y: auto; overscroll-behavior: contain; border: 1px solid var(--line); border-radius: 27px; background: var(--bg); color: var(--ink); box-shadow: 0 20px 80px #071d2055; }
+dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+.dialog-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 20px 21px 12px; }
+.dialog-head h2 { font-size: 21px; letter-spacing: -.55px; }
+.dialog-head .icon-btn { width: 44px; height: 44px; background: var(--paper); }
+.dialog-body { padding: 0 21px 8px; }
+.dialog-body .field:first-child { margin-top: 10px; }
+.dialog-body > .food-emoji { font-size: 35px; margin-top: 4px; }
+.dialog-actions { display: flex; flex-direction: column; gap: 9px; padding: 10px 21px 21px; }
+.dialog-actions > * { flex: 1; min-width: 0; }
+.dialog-actions > .text-btn { width: 100%; }
+.dialog-body > .dialog-actions { padding: 12px 0 14px; }
+.form-error { min-height: 18px; margin: 8px 0; color: var(--danger); font-size: 12px; }
+.form-error:empty { display: none; }
+.form-note { margin: 10px 0; color: var(--muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+.portion-result { margin: 17px 0 12px; padding: 18px; border-radius: 18px; background: var(--soft); color: var(--accent); text-align: center; font-size: 18px; }
+.portion-result strong, .portion-result output { font-size: 34px; font-weight: 700; line-height: 1.1; letter-spacing: -.8px; }
+.portion-result small { font-size: 13px; }
+.toast { position: fixed; z-index: 100; left: 50%; bottom: calc(var(--nav-height) + env(safe-area-inset-bottom, 0px) + 12px); transform: translateX(-50%); display: flex; align-items: center; justify-content: space-between; gap: 12px; width: calc(100% - 32px); max-width: 424px; padding: 12px 15px; border: 1px solid var(--line); border-radius: 18px; background: var(--paper); color: var(--ink); box-shadow: 0 8px 32px #173b2729; font-size: 13px; }
+.toast > span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.toast > .icon-btn { color: inherit; border: 0; background: transparent; }
+.toast-action { flex-shrink: 0; min-height: 44px; padding: 6px 8px; border: 0; border-radius: 10px; background: transparent; color: inherit; font-size: 13px; font-weight: 650; text-decoration: underline; text-underline-offset: 3px; }
+.error-panel { margin: 18px 0; padding: 20px; border: 1px solid var(--danger); border-radius: 20px; background: var(--danger-soft); color: var(--ink); }
+.error-panel h2 { margin-bottom: 10px; font-size: 18px; }
+.error-panel p + p { margin-top: 10px; }
+.error-panel button { margin-top: 15px; }
+.empty { padding: 23px 16px; border: 1px dashed var(--line); border-radius: 19px; color: var(--muted); font-size: 13px; text-align: center; }
+.empty > svg { display: block; width: 28px; height: 28px; margin: 0 auto 10px; color: var(--accent); }
+.empty strong { display: block; margin-bottom: 6px; color: var(--ink); font-size: 15px; }
+.empty .text-btn { margin-top: 6px; }
+.sr-only { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important; overflow: hidden !important; clip: rect(0, 0, 0, 0) !important; white-space: nowrap !important; border: 0 !important; }
+
+@media (max-width: 359px) {
+  main#main { padding-left: 15px; padding-right: 15px; }
+  .topbar { padding-left: 15px; padding-right: 15px; }
+  h1 { font-size: 28px; }
+  .ring-summary { gap: 13px; padding: 19px 10px; }
+  .ring { width: 126px; height: 126px; padding: 9px; }
+  .ring-inner strong { font-size: 27px; }
+  .ring-side > strong { font-size: 27px; }
+  .ring-side small, .ring-side > span { font-size: 11px; }
+  .favorite-grid { gap: 6px; }
+  .favorite-card { padding: 10px 8px; }
+  .panel, .settings-section { padding: 16px; }
+  .entry-row { gap: 6px; }
+  .entry-actions { gap: 0; }
+  .entry-actions strong { font-size: 13px; }
+  .entry-calories { font-size: 14px; }
+  .food-main { gap: 7px; }
+  .food-main .food-name, .food-main strong { font-size: 12px; }
+  .two-col { gap: 8px; }
+  .field input, .field select { padding-left: 10px; padding-right: 10px; }
+  .tabbar { padding-left: 6px; padding-right: 6px; }
+  .tabbar button { font-size: 9px; }
+}
+
+@media (min-width: 600px) {
+  .app { border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+  .topbar { padding-top: 24px; }
+  .tabbar { border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; animation: none !important; }
+}
+
+@media print {
+  body, .app { background: white; color: #223d2b; box-shadow: none; }
+  .app { max-width: none; padding: 0; }
+  .tabbar, .toast, .keypad, .save-state { display: none !important; }
+  .panel, .settings-section, .ring-summary { break-inside: avoid; }
+}
+</style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <a class="brand" href="./" aria-label="Pomme, accueil"><img class="brand-icon" src="./icon.svg" width="38" height="38" alt=""><span>Pomme<span class="brand-caption">MON CARNET QUOTIDIEN</span></span></a>
+      <span class="save-state" id="save-state" role="status">Ouverture…</span>
+    </header>
+    <main id="main"><div class="empty"><h1>Bienvenue dans Pomme</h1><p>Ouverture de ton carnet…</p></div></main>
+    <nav class="tabbar" id="nav" aria-label="Navigation principale"></nav>
+    <footer class="app-footer">Pomme · ton suivi, à ton rythme</footer>
+  </div>
+  <dialog id="dialog" aria-labelledby="dialog-title"></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+  <noscript><p>Active JavaScript dans Safari pour utiliser ton carnet Pomme.</p></noscript>
+  <script>(function (root) {
+  'use strict';
+
+  const DB_NAME = 'pomme-local-v1';
+  const STORE_NAME = 'state';
+  const STATE_KEY = 'singleton';
+  const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
+  const MAX_DAYS = 20000;
+  const MAX_WEIGHTS = 20000;
+  const MAX_FOODS = 2000;
+  const MAX_ENTRIES_PER_DAY = 1000;
+  const FORBIDDEN_KEYS = ['__proto__', 'prototype', 'constructor'];
+
+  function invalid(message) {
+    throw new Error('Données invalides : ' + message);
+  }
+
+  function record(value, label) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) invalid(label);
+    const prototype = Object.getPrototypeOf(value);
+    if (prototype !== Object.prototype && prototype !== null) invalid(label);
+    if (FORBIDDEN_KEYS.some(key => Object.prototype.hasOwnProperty.call(value, key))) {
+      invalid(label + ' contient une propriété interdite.');
+    }
+    return value;
+  }
+
+  function text(value, label, maxLength, allowEmpty) {
+    if (typeof value !== 'string') invalid(label);
+    const clean = value.trim();
+    if ((!allowEmpty && !clean) || clean.length > maxLength || /[<>\u0000-\u001f\u007f]/.test(clean)) {
+      invalid(label + ' doit être un texte simple.');
+    }
+    return clean;
+  }
+
+  function id(value, label) {
+    if (typeof value !== 'string' || !/^[a-zA-Z0-9][a-zA-Z0-9_.:-]{0,99}$/.test(value) || FORBIDDEN_KEYS.includes(value)) {
+      invalid(label);
+    }
+    return value;
+  }
+
+  function number(value, min, max, label, exclusiveMin) {
+    if (typeof value !== 'number' || !Number.isFinite(value) || value > max || (exclusiveMin ? value <= min : value < min)) {
+      invalid(label + ' est hors limites.');
+    }
+    return value;
+  }
+
+  function list(value, max, label) {
+    if (!Array.isArray(value) || value.length > max) invalid(label);
+    return value;
+  }
+
+  function sourceValue(value) {
+    if (typeof value === 'string') return text(value, 'la source de l’aliment', 500, true);
+    record(value, 'la source de l’aliment');
+    const clean = { label: text(value.label, 'le nom de la source', 200, false) };
+    const url = text(value.url, 'le lien de la source', 1000, false);
+    let parsed;
+    try { parsed = new URL(url); }
+    catch (_) { invalid('le lien de la source'); }
+    if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password) invalid('le lien de la source');
+    clean.url = parsed.href;
+    if (value.code !== undefined) clean.code = text(value.code, 'le code de la source', 100, true);
+    return clean;
+  }
+
+  function validDate(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+    const [year, month, day] = value.split('-').map(Number);
+    if (year < 1000 || month < 1 || month > 12 || day < 1 || day > 31) return false;
+    const date = new Date(Date.UTC(year, month - 1, day));
+    return date.getUTCFullYear() === year && date.getUTCMonth() === month - 1 && date.getUTCDate() === day;
+  }
+
+  function dateValue(value, label) {
+    if (!validDate(value)) invalid(label + ' doit être une date valide (AAAA-MM-JJ).');
+    return value;
+  }
+
+  function timestamp(value, label, nullable) {
+    if (nullable && value === null) return null;
+    if (typeof value !== 'string' || value.length > 40 ||
+        !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.test(value) ||
+        !validDate(value.slice(0, 10)) || !Number.isFinite(Date.parse(value))) invalid(label);
+    return new Date(value).toISOString();
+  }
+
+  function localDate(date = new Date()) {
+    if (!(date instanceof Date) || !Number.isFinite(date.getTime())) throw new TypeError('Date incorrecte.');
+    return String(date.getFullYear()).padStart(4, '0') + '-' +
+      String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+  }
+
+  // Invalid or incomplete numeric input deliberately returns NaN, never zero.
+  function decimal(value) {
+    if (typeof value === 'number') return Number.isFinite(value) ? value : NaN;
+    if (typeof value !== 'string') return NaN;
+    const clean = value.trim();
+    if (!/^-?(?:\d+(?:[.,]\d+)?|[.,]\d+)$/.test(clean)) return NaN;
+    const result = Number(clean.replace(',', '.'));
+    return Number.isFinite(result) ? result : NaN;
+  }
+
+  function blankState() {
+    return {
+      schemaVersion: 1,
+      settings: { limit: 2000, height: null, favoriteIds: [] },
+      days: {},
+      foods: [],
+      weights: [],
+      updatedAt: null,
+      lastBackupAt: null
+    };
+  }
+
+  // Rebuild the complete persisted schema; no spread/merge of imported objects.
+  function validateState(input) {
+    record(input, 'la sauvegarde');
+    if (input.schemaVersion !== 1) invalid('version de sauvegarde non prise en charge.');
+    const settings = record(input.settings, 'les réglages');
+    const clean = blankState();
+    clean.settings.limit = number(settings.limit, 1, 20000, 'le plafond quotidien');
+    clean.settings.height = settings.height === null ? null : number(settings.height, 20, 300, 'la taille');
+    const favorites = settings.favoriteIds === undefined ? [] : list(settings.favoriteIds, MAX_FOODS, 'les favoris');
+    const favoriteIds = new Set();
+    clean.settings.favoriteIds = favorites.map(value => {
+      const favoriteId = id(value, 'un identifiant de favori');
+      if (favoriteIds.has(favoriteId)) invalid('un favori apparaît plusieurs fois.');
+      favoriteIds.add(favoriteId);
+      return favoriteId;
+    });
+
+    const days = record(input.days, 'les journées');
+    const dates = Object.keys(days);
+    if (dates.length > MAX_DAYS) invalid('trop de journées.');
+    const entryIds = new Set();
+    for (const date of dates.sort()) {
+      dateValue(date, 'la date de consommation');
+      const day = record(days[date], 'une journée');
+      const cleanDay = {
+        limit: number(day.limit, 1, 20000, 'le plafond de la journée'),
+        entries: []
+      };
+      cleanDay.entries = list(day.entries, MAX_ENTRIES_PER_DAY, 'les consommations de la journée').map(value => {
+        const entry = record(value, 'une consommation');
+        const entryId = id(entry.id, 'un identifiant de consommation');
+        if (entryIds.has(entryId)) invalid('un identifiant de consommation apparaît plusieurs fois.');
+        entryIds.add(entryId);
+        const cleanEntry = {
+          id: entryId,
+          name: text(entry.name, 'le nom de la consommation', 120, false),
+          portion: text(entry.portion, 'la portion', 160, true),
+          kcal: number(entry.kcal, 0, 100000, 'les calories de la consommation'),
+          createdAt: timestamp(entry.createdAt, 'la date de création de la consommation', false)
+        };
+        if (entry.foodId !== undefined) cleanEntry.foodId = id(entry.foodId, 'un identifiant d’aliment');
+        return cleanEntry;
+      });
+      clean.days[date] = cleanDay;
+    }
+
+    const foodIds = new Set();
+    clean.foods = list(input.foods, MAX_FOODS, 'les aliments personnels').map(value => {
+      const food = record(value, 'un aliment');
+      const foodId = id(food.id, 'un identifiant d’aliment');
+      if (foodIds.has(foodId)) invalid('un identifiant d’aliment apparaît plusieurs fois.');
+      foodIds.add(foodId);
+      if (!['100g', '100ml', 'portion'].includes(food.basis)) invalid('l’unité d’un aliment');
+      const cleanFood = {
+        id: foodId,
+        name: text(food.name, 'le nom de l’aliment', 120, false),
+        kcal: number(food.kcal, 0, 100000, 'les calories de l’aliment'),
+        basis: food.basis,
+        portionName: text(food.portionName, 'le nom de la portion', 80, food.basis !== 'portion'),
+        defaultAmount: number(food.defaultAmount, 0, 100000, 'la quantité habituelle', true),
+        emoji: text(food.emoji, 'l’icône de l’aliment', 32, true)
+      };
+      if (food.source !== undefined) cleanFood.source = sourceValue(food.source);
+      return cleanFood;
+    });
+
+    const weightDates = new Set();
+    clean.weights = list(input.weights, MAX_WEIGHTS, 'les pesées').map(value => {
+      const weight = record(value, 'une pesée');
+      const date = dateValue(weight.date, 'la date de pesée');
+      if (weightDates.has(date)) invalid('plusieurs pesées ont la même date.');
+      weightDates.add(date);
+      return { date, kg: number(weight.kg, 1, 1000, 'le poids') };
+    }).sort((a, b) => a.date.localeCompare(b.date));
+    clean.updatedAt = timestamp(input.updatedAt, 'la dernière modification', true);
+    clean.lastBackupAt = timestamp(input.lastBackupAt, 'la dernière sauvegarde', true);
+    return clean;
+  }
+
+  function makeBackup(state) {
+    return { app: 'pomme', version: 1, exportedAt: new Date().toISOString(), data: validateState(state) };
+  }
+
+  // JSON.parse keeps only the last repeated object key. Reject such files before
+  // importing so duplicate day keys cannot silently discard a day's entries.
+  // Input syntax is already checked by JSON.parse; this scan is iterative.
+  function rejectDuplicateJSONKeys(value) {
+    const stack = [];
+    for (let offset = 0; offset < value.length; offset += 1) {
+      const character = value[offset];
+      if (character === '"') {
+        const start = offset;
+        offset += 1;
+        while (offset < value.length) {
+          if (value[offset] === '\\') offset += 2;
+          else if (value[offset] === '"') break;
+          else offset += 1;
+        }
+        const context = stack[stack.length - 1];
+        if (context && context.object && context.expectKey) {
+          const key = JSON.parse(value.slice(start, offset + 1));
+          if (context.keys.has(key)) invalid('le fichier contient une propriété en double.');
+          context.keys.add(key);
+          context.expectKey = false;
+        }
+      } else if (character === '{' || character === '[') {
+        if (stack.length >= 64) invalid('le fichier contient trop de niveaux imbriqués.');
+        stack.push(character === '{' ? { object: true, keys: new Set(), expectKey: true } : { object: false });
+      } else if (character === '}' || character === ']') stack.pop();
+      else if (character === ',') {
+        const context = stack[stack.length - 1];
+        if (context && context.object) context.expectKey = true;
+      }
+    }
+  }
+
+  function parseBackup(value) {
+    if (typeof value !== 'string') invalid('le fichier doit contenir du texte JSON.');
+    // Length check first avoids allocating an encoded copy of arbitrarily large input.
+    if (value.length > MAX_BACKUP_BYTES || new TextEncoder().encode(value).byteLength > MAX_BACKUP_BYTES) {
+      invalid('le fichier dépasse la taille maximale de 5 Mo.');
+    }
+    let envelope;
+    try { envelope = JSON.parse(value); }
+    catch (_) { invalid('le fichier JSON est illisible.'); }
+    rejectDuplicateJSONKeys(value);
+    record(envelope, 'le fichier de sauvegarde');
+    if (envelope.app !== 'pomme' || envelope.version !== 1) invalid('ce fichier n’est pas une sauvegarde Pomme compatible.');
+    timestamp(envelope.exportedAt, 'la date d’export', false);
+    return validateState(envelope.data);
+  }
+
+  function getDay(state, date) {
+    dateValue(date, 'la journée');
+    return state.days[date] || { limit: state.settings.limit, entries: [] };
+  }
+
+  function roundCalories(value) { return Math.round((value + Number.EPSILON) * 100) / 100; }
+
+  function dayTotal(day) {
+    return roundCalories(day.entries.reduce((sum, entry) => sum + entry.kcal, 0));
+  }
+
+  function latestWeight(state) {
+    return state.weights.reduce((latest, weight) => !latest || weight.date > latest.date ? weight : latest, null);
+  }
+
+  function portionCalories(food, amount) {
+    const quantity = decimal(amount);
+    number(quantity, 0, 100000, 'la quantité', true);
+    number(food.kcal, 0, 100000, 'les calories de l’aliment');
+    if (!['100g', '100ml', 'portion'].includes(food.basis)) invalid('l’unité de l’aliment');
+    const result = roundCalories(food.kcal * quantity / (food.basis === 'portion' ? 1 : 100));
+    number(result, 0, 100000, 'les calories de la portion');
+    return result;
+  }
+
+  function storageError(error, fallback) {
+    const message = error && error.message ? error.message : fallback;
+    const result = new Error(message || 'Impossible d’accéder au stockage de cet appareil.');
+    if (error && error.name) result.name = error.name;
+    return result;
+  }
+
+  function openDB() {
+    return new Promise((resolve, reject) => {
+      if (!root.indexedDB) {
+        reject(new Error('Le stockage local est indisponible dans ce navigateur.'));
+        return;
+      }
+      let request;
+      let settled = false;
+      try { request = root.indexedDB.open(DB_NAME, 1); }
+      catch (error) { reject(storageError(error)); return; }
+      request.onupgradeneeded = () => {
+        const db = request.result;
+        if (!db.objectStoreNames.contains(STORE_NAME)) db.createObjectStore(STORE_NAME);
+      };
+      request.onerror = () => {
+        settled = true;
+        reject(storageError(request.error, 'Impossible d’ouvrir la base locale.'));
+      };
+      request.onblocked = () => {
+        settled = true;
+        reject(new Error('Fermez les autres onglets Pomme, puis rechargez cette page.'));
+      };
+      request.onsuccess = () => {
+        const db = request.result;
+        if (settled) { db.close(); return; }
+        settled = true;
+        db.onversionchange = () => db.close();
+        resolve(db);
+      };
+    });
+  }
+
+  function readDB(db) {
+    return new Promise((resolve, reject) => {
+      let transaction;
+      let request;
+      let result;
+      try {
+        transaction = db.transaction(STORE_NAME, 'readonly');
+        request = transaction.objectStore(STORE_NAME).get(STATE_KEY);
+      } catch (error) { reject(storageError(error)); return; }
+      request.onsuccess = () => { result = request.result; };
+      request.onerror = () => reject(storageError(request.error, 'Lecture locale impossible.'));
+      transaction.onabort = () => reject(storageError(transaction.error || request.error, 'Lecture locale interrompue.'));
+      transaction.onerror = () => reject(storageError(transaction.error || request.error, 'Lecture locale impossible.'));
+      transaction.oncomplete = () => {
+        try { resolve(result === undefined ? null : validateState(result)); }
+        catch (error) { reject(error); }
+      };
+    });
+  }
+
+  async function writeDB(db, state) {
+    const snapshot = validateState(state);
+    return new Promise((resolve, reject) => {
+      let transaction;
+      let request;
+      try {
+        transaction = db.transaction(STORE_NAME, 'readwrite');
+        request = transaction.objectStore(STORE_NAME).put(snapshot, STATE_KEY);
+      } catch (error) { reject(storageError(error)); return; }
+      request.onerror = () => reject(storageError(request.error, 'Enregistrement local impossible.'));
+      transaction.onabort = () => reject(storageError(transaction.error || request.error, 'Enregistrement interrompu.'));
+      transaction.onerror = () => reject(storageError(transaction.error || request.error, 'Enregistrement local impossible.'));
+      // A successful put request alone does not prove that the transaction committed.
+      transaction.oncomplete = () => resolve(snapshot);
+    });
+  }
+
+  // One readwrite transaction serializes changes across all tabs of this origin.
+  // Mutators must not await: IndexedDB would otherwise close the transaction.
+  function updateDB(db, mutator) {
+    return new Promise((resolve, reject) => {
+      if (typeof mutator !== 'function') { reject(new TypeError('Modification incorrecte.')); return; }
+      let transaction;
+      let request;
+      let snapshot;
+      let mutationError;
+      try {
+        transaction = db.transaction(STORE_NAME, 'readwrite');
+        request = transaction.objectStore(STORE_NAME).get(STATE_KEY);
+      } catch (error) { reject(storageError(error)); return; }
+      request.onerror = () => reject(storageError(request.error, 'Lecture locale impossible.'));
+      transaction.onabort = () => reject(mutationError || storageError(transaction.error || request.error, 'Modification locale interrompue.'));
+      transaction.onerror = () => reject(mutationError || storageError(transaction.error || request.error, 'Modification locale impossible.'));
+      request.onsuccess = () => {
+        try {
+          const draft = request.result === undefined ? blankState() : validateState(request.result);
+          const result = mutator(draft);
+          if (result && typeof result.then === 'function') throw new TypeError('La modification doit être synchrone.');
+          snapshot = validateState(result === undefined ? draft : result);
+          const writeRequest = transaction.objectStore(STORE_NAME).put(snapshot, STATE_KEY);
+          writeRequest.onerror = () => reject(storageError(writeRequest.error, 'Enregistrement local impossible.'));
+        } catch (error) {
+          mutationError = error;
+          try { transaction.abort(); } catch (_) { /* The transaction may already be aborted. */ }
+          reject(error);
+        }
+      };
+      transaction.oncomplete = () => {
+        if (snapshot) resolve(snapshot);
+        else reject(new Error('La modification n’a pas été enregistrée.'));
+      };
+    });
+  }
+
+  root.PommeCore = Object.freeze({
+    DB_NAME, MAX_BACKUP_BYTES, localDate, validDate, decimal, blankState, validateState,
+    makeBackup, parseBackup, getDay, dayTotal, latestWeight, portionCalories,
+    openDB, readDB, writeDB, updateDB
+  });
+})(globalThis);
+
+/*
+ * Anses. 2025. Table de composition nutritionnelle des aliments Ciqual.
+ * Source officielle : édition anglaise datée du 03/11/2025, consultée le 22/10/2026.
+ * Valeurs de la colonne « Energy, Regulation EU No 1169 2011 (kcal 100g) ».
+ * Toutes les valeurs portent sur 100 g de partie comestible, y compris le lait
+ * et l'huile. Aucune conversion grammes/millilitres n'a été supposée.
+ * Les libellés français sont des traductions descriptives des entrées identifiées.
+ * Réutilisation : Licence Ouverte / Open Licence, Etalab 2.0.
+ */
+(function () {
+  'use strict';
+  const datasetUrl = 'https://ciqual.anses.fr/cms/sites/default/files/inline-files/Table%20Ciqual%202025_ENG_2025_11_03.xlsx';
+  const rows = [
+    ['13039', 'Pomme, chair et peau, crue', 54, '🍎'],
+    ['13005', 'Banane, chair sans peau, crue', 87.6, '🍌'],
+    ['7110', 'Pain complet ou intégral (farine T150)', 234, '🍞'],
+    ['9104', 'Riz blanc, cuit, sans sel ajouté', 155, '🍚'],
+    ['9811', 'Pâtes classiques, cuites, sans sel ajouté', 167, '🍝'],
+    ['22010', 'Œuf dur, sans coquille', 134, '🥚'],
+    ['36018', 'Poulet, blanc sans peau, grillé ou poêlé', 141, '🍗'],
+    ['19041', 'Lait demi-écrémé UHT', 47.7, '🥛'],
+    ['19593', 'Yaourt ou lait fermenté, nature', 50.1, '🥣'],
+    ['17270', 'Huile d’olive vierge extra', 899, '🫒'],
+    ['20009', 'Carotte, crue', 30.2, '🥕'],
+    ['20385', 'Tomate, crue', 19.2, '🍅'],
+    ['4003', 'Pomme de terre, cuite à l’eau', 81, '🥔'],
+    ['20360', 'Lentilles, cuites à l’eau', 125, '🫘'],
+    ['15000', 'Amandes avec peau, sans sel ajouté', 615, '🌰'],
+    ['25996', 'Saumon, cuit (moyenne)', 205, '🐟'],
+    ['12115', 'Emmental au lait de vache', 373, '🧀'],
+    ['32140', 'Flocons d’avoine, secs', 369, '🌾'],
+    ['16400', 'Beurre doux, au moins 80 % de matière grasse', 753, '🧈']
+  ];
+  globalThis.PommeFoods = {
+    foods: rows.map(([code, name, kcal, emoji]) => ({
+      id: 'ciqual-' + code,
+      name,
+      kcal,
+      basis: '100g',
+      portionName: 'g',
+      defaultAmount: 100,
+      emoji,
+      source: {
+        label: 'ANSES · Ciqual 2025 · aliment ' + code,
+        url: datasetUrl
+      }
+    })),
+    sources: [{
+      label: 'Anses. 2025. Table de composition nutritionnelle des aliments Ciqual',
+      url: datasetUrl,
+      website: 'https://ciqual.anses.fr/',
+      documentation: 'https://ciqual.anses.fr/cms/sites/default/files/inline-files/Table%20Ciqual%202025%20doc%20FR_2025_11_19.pdf',
+      license: 'Licence Ouverte / Open Licence Etalab 2.0',
+      consultedOn: '2026-10-22',
+      note: 'Valeurs moyennes pour 100 g de partie comestible. Peser l’aliment dans l’état indiqué (cru ou cuit). Le lait et l’huile sont aussi exprimés en grammes. Pour un produit précis, utiliser les informations de son emballage.'
+    }]
+  };
+}());
+
+(function () {
+  'use strict';
+  const C=globalThis.PommeCore, catalogue=globalThis.PommeFoods;
+  const main=document.getElementById('main'),nav=document.getElementById('nav'),dialog=document.getElementById('dialog'),toastEl=document.getElementById('toast'),badge=document.getElementById('save-state');
+  const paths={home:'M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z',food:'M12 7c-7-5-11 2-8 8 2 5 4 7 8 5 4 2 6 0 8-5 3-6-1-13-8-8Zm0 0c0-4 3-5 5-5',chart:'M4 3v17h17M7 14l4-5 4 3 5-7',calendar:'M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2Zm2-3v6M17 2v6M3 11h18',settings:'M4 7h16M4 17h16M8 4v6M16 14v6',plus:'M12 5v14M5 12h14',x:'m6 6 12 12M6 18 18 6',left:'m15 5-7 7 7 7',right:'m9 5 7 7-7 7',edit:'m4 16 11-11 4 4L8 20H4Zm10-10 4 4',trash:'M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7',search:'M15.5 15.5 21 21M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0',backspace:'M9 4h12v16H9L2 12Zm3 5 6 6m0-6-6 6',star:'m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z',download:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',upload:'M12 16V4m-5 5 5-5 5 5M4 16v5h16v-5',share:'M12 16V3M8 7l4-4 4 4M6 10H4v11h16V10h-2',check:'m5 12 4 4L19 6',leaf:'M20 3C9 2 2 9 5 16c7 4 15-2 15-13ZM5 19 15 9'};
+  const icon=name=>'<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(paths[name]||paths.plus)+'"/></svg>';
+  const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const num=(n,d=0)=>Number(n).toLocaleString('fr-CH',{maximumFractionDigits:d});
+  const kg=n=>Number(n).toLocaleString('fr-CH',{minimumFractionDigits:1,maximumFractionDigits:2});
+  const fmtDate=(date,short=false)=>new Date(date+'T12:00:00').toLocaleDateString('fr-CH',short?{day:'numeric',month:'short'}:{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  const shiftDate=(date,step)=>{const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+step);return C.localDate(d);};
+  const uid=()=>crypto.randomUUID?crypto.randomUUID():'id-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
+  let state=C.blankState(),db=null,busy=false,lastToday=C.localDate(),storagePersistent=false,channel=null,toastAction=null;
+  const ui={tab:'day',date:lastToday,digits:'',entryName:'',search:'',foodFilter:'all',weightDate:lastToday,weightInput:'',weightEdit:null,dialog:null};
+  const allFoods=()=>[...state.foods,...catalogue.foods];
+  const findFood=id=>allFoods().find(f=>f.id===id);
+  const sourceHTML=source=>typeof source==='object'?'<a href="'+esc(source.url)+'" target="_blank" rel="noopener noreferrer">'+esc(source.label)+'</a>':esc(source||'Saisie personnelle');
+  const basisLabel=f=>f.basis==='portion'?'par '+(f.portionName||'portion'):'pour '+(f.basis==='100ml'?'100 ml':'100 g');
+  const amountUnit=f=>f.basis==='100g'?'g':f.basis==='100ml'?'ml':f.portionName||'portion';
+  function tell(text,action){toastAction=action||null;toastEl.innerHTML='<span>'+esc(text)+'</span>'+(action?'<button class="toast-action" data-action="toast-action">'+esc(action.label)+'</button>':'')+'<button class="icon-btn" data-action="dismiss-toast" aria-label="Fermer le message">'+icon('x')+'</button>';toastEl.hidden=false;}
+  function setStatus(text,error=false){badge.textContent=text;badge.classList.toggle('has-error',error);}
+  function ensureDay(draft,date){if(!C.validDate(date)||date>C.localDate())throw Error('Choisis une date passée ou aujourd’hui.');if(!draft.days[date])draft.days[date]={limit:draft.settings.limit,entries:[]};return draft.days[date];}
+  async function save(mutator,message,after){
+    if(busy||!db)return false;
+    busy=true;setStatus('Enregistrement…');main.setAttribute('aria-busy','true');
+    try{state=await C.updateDB(db,draft=>{const next=mutator(draft)||draft;next.updatedAt=new Date().toISOString();return next;});if(after)after();render();setStatus('Enregistré sur cet appareil');if(message)tell(message);channel?.postMessage({changed:true});return true;}
+    catch(error){setStatus('Non enregistré',true);if(dialog.open)errorIn(dialog.querySelector('form'),error);else{const errorEl=main.querySelector('.form-error');if(errorEl)errorEl.textContent=error.message;}tell('Enregistrement impossible : '+error.message);return false;}
+    finally{busy=false;main.removeAttribute('aria-busy');}
+  }
+  function go(tab){ui.tab=tab;render();window.scrollTo({top:0,behavior:'instant'});}
+  function navHTML(){return [['day','home','Jour'],['foods','food','Aliments'],['weight','chart','Poids'],['history','calendar','Historique'],['settings','settings','Réglages']].map(([id,ic,label])=>'<button type="button" data-tab="'+id+'" '+(ui.tab===id?'aria-current="page"':'')+'>'+icon(ic)+'<span>'+label+'</span></button>').join('');}
+  const heading=(title,subtitle,action='')=>'<div class="page-head"><div><h1>'+title+'</h1><p class="muted small">'+subtitle+'</p></div>'+action+'</div>';
+  function datebar(){return '<div class="datebar"><button class="icon-btn" data-action="previous-day" aria-label="Jour précédent">'+icon('left')+'</button><label><span class="sr-only">Journée affichée</span><input type="date" id="day-date" value="'+ui.date+'" max="'+C.localDate()+'" required></label><button class="icon-btn" data-action="next-day" aria-label="Jour suivant" '+(ui.date>=C.localDate()?'disabled':'')+'>'+icon('right')+'</button>'+(ui.date!==C.localDate()?'<button class="text-btn" data-action="today">Aujourd’hui</button>':'')+'</div>';}
+  function favoriteCards(){const favorites=state.settings.favoriteIds.map(findFood).filter(Boolean).slice(0,3);return favorites.length?'<div class="favorite-grid">'+favorites.map(f=>'<button class="favorite-card" data-portion="'+esc(f.id)+'"><span class="food-emoji">'+esc(f.emoji||'🍽️')+'</span><span class="food-name">'+esc(f.name)+'</span><span class="tiny muted">'+num(f.kcal,1)+' kcal · '+(f.basis==='portion'?esc(f.portionName):f.basis==='100g'?'100 g':'100 ml')+'</span></button>').join('')+'</div>':'<button class="secondary" data-tab="foods">'+icon('star')+' Choisir mes aliments favoris</button>';}
+  function entriesHTML(day,date){return day.entries.length?'<div class="meal-entries">'+day.entries.map(e=>'<div class="entry-row"><div class="entry-text"><b>'+esc(e.name)+'</b><span class="small muted">'+esc(e.portion||'Saisie libre')+'</span></div><span class="entry-calories">'+num(e.kcal,1)+' <small>kcal</small></span><div class="entry-actions"><button class="icon-btn" data-edit-entry="'+e.id+'" data-date="'+date+'" aria-label="Modifier '+esc(e.name)+'">'+icon('edit')+'</button><button class="icon-btn" data-delete-entry="'+e.id+'" data-date="'+date+'" aria-label="Retirer '+esc(e.name)+'">'+icon('trash')+'</button></div></div>').join('')+'</div>':'<div class="empty small">Ta journée commence ici.<br>Ajoute un aliment ou saisis ses calories.</div>';}
+  function dayView(){const day=C.getDay(state,ui.date),consumed=C.dayTotal(day),left=day.limit-consumed;
+    return heading(ui.date===C.localDate()?'Ma journée':'Mon journal',fmtDate(ui.date),'<button class="icon-btn" data-tab="settings" aria-label="Régler mon plafond">'+icon('leaf')+'</button>')+datebar()+
+      '<section class="ring-summary" aria-label="Bilan de calories"><div class="ring" style="--progress:'+Math.min(100,consumed/day.limit*100)+'%"><div class="ring-inner"><span class="small muted">Consommées</span><strong>'+num(consumed)+'</strong><small>kcal</small></div></div><div class="ring-side"><strong>'+num(Math.abs(left))+'</strong><span class="small muted">'+(left<0?'kcal au-dessus du plafond':'kcal restantes')+'</span><button class="text-btn" data-tab="settings">Plafond '+num(day.limit)+' kcal '+icon('edit')+'</button></div></section>'+
+      (!state.updatedAt?'<p class="notice small">Pour commencer, choisis ton plafond personnel dans <button class="text-btn" data-tab="settings">Réglages</button>.</p>':'')+
+      '<div class="section-head"><h2>Mes favoris</h2><button class="text-btn" data-tab="foods">Tout voir '+icon('right')+'</button></div>'+favoriteCards()+
+      '<section class="quick-entry"><div class="section-head"><h2>Ajout rapide</h2><span class="tiny muted">'+(ui.date===C.localDate()?'Aujourd’hui':fmtDate(ui.date,true))+'</span></div><label class="field"><span class="sr-only">Nom de l’aliment ou du repas</span><input id="entry-name" type="text" maxlength="120" placeholder="Aliment ou repas (facultatif)" value="'+esc(ui.entryName)+'" autocomplete="off"></label><div class="entry-display"><span class="muted small">Calories libres</span><output id="calorie-display" aria-live="polite">'+(ui.digits?num(Number(ui.digits)):0)+' <small>kcal</small></output></div><div class="keypad" aria-label="Pavé numérique">'+['1','2','3','4','5','6','7','8','9','C','0','delete'].map(k=>'<button type="button" data-key="'+k+'" '+(k==='C'?'aria-label="Effacer la saisie"':k==='delete'?'aria-label="Effacer le dernier chiffre"':'')+'>'+(k==='delete'?icon('backspace'):k)+'</button>').join('')+'</div><button id="add-calories" class="primary" data-action="add-calories" '+(!ui.digits?'disabled':'')+'>'+icon('plus')+' Ajouter'+(ui.digits?' '+num(Number(ui.digits))+' kcal':' des calories')+'</button></section>'+
+      '<div class="section-head"><h2>Au fil de la journée</h2><span class="small muted">'+day.entries.length+' ajout'+(day.entries.length!==1?'s':'')+'</span></div>'+entriesHTML(day,ui.date);
+  }
+  function foodRows(){const query=ui.search.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();const foods=allFoods().filter(f=>(ui.foodFilter!=='favorites'||state.settings.favoriteIds.includes(f.id))&&f.name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().includes(query));
+    return foods.length?foods.map(f=>'<div class="food-row"><button class="food-main" data-portion="'+esc(f.id)+'"><span class="food-emoji">'+esc(f.emoji||'🍽️')+'</span><span><b>'+esc(f.name)+'</b><span class="food-meta">'+num(f.kcal,1)+' kcal '+esc(basisLabel(f))+'</span></span></button><button class="star icon-btn" data-favorite="'+esc(f.id)+'" aria-pressed="'+state.settings.favoriteIds.includes(f.id)+'" aria-label="'+(state.settings.favoriteIds.includes(f.id)?'Retirer des favoris : ':'Ajouter aux favoris : ')+esc(f.name)+'">'+icon('star')+'</button>'+(state.foods.some(x=>x.id===f.id)?'<button class="icon-btn" data-edit-food="'+esc(f.id)+'" aria-label="Modifier '+esc(f.name)+'">'+icon('edit')+'</button>':'')+'</div>').join(''):'<div class="empty">'+(ui.foodFilter==='favorites'?'Ajoute une étoile aux aliments que tu consommes souvent.':'Aucun aliment trouvé. Tu peux créer le tien.')+'</div>';
+  }
+  function foodsView(){return heading('Mes aliments','Mes portions, mes habitudes','<button class="icon-btn" data-action="new-food" aria-label="Créer un aliment">'+icon('plus')+'</button>')+'<label class="searchbox">'+icon('search')+'<input id="food-search" type="search" placeholder="Rechercher un aliment" aria-label="Rechercher un aliment" value="'+esc(ui.search)+'"></label><div class="segmented" aria-label="Afficher les aliments"><button data-filter="all" aria-pressed="'+(ui.foodFilter==='all')+'">Tous les aliments</button><button data-filter="favorites" aria-pressed="'+(ui.foodFilter==='favorites')+'">Mes favoris</button></div><div class="food-list" id="food-list">'+foodRows()+'</div><button class="secondary" data-action="new-food">'+icon('plus')+' Créer mon aliment ou repas</button><p class="source-note">Les aliments de départ proviennent de <a href="https://ciqual.anses.fr/" target="_blank" rel="noopener noreferrer">l’ANSES · Ciqual 2025</a>. Valeurs moyennes pour 100 g de partie comestible, à peser dans l’état indiqué. Pour un produit précis, utilise son étiquette. '+catalogue.foods.length+' aliments disponibles.</p>';}
+  function weightView(){const rows=[...state.weights].sort((a,b)=>b.date.localeCompare(a.date)),last=C.latestWeight(state),existing=state.weights.find(w=>w.date===ui.weightDate);
+    return heading('Mon poids','Une mesure, une date, mon évolution')+'<div class="weight-summary"><span class="small muted">Dernière mesure</span><strong>'+(last?kg(last.kg):'—')+' <small>kg</small></strong><span class="small muted">'+(last?fmtDate(last.date,true):'Ajoute ta première pesée')+'</span></div><svg class="weight-chart" role="img" aria-label="Évolution du poids en kilogrammes selon les dates"></svg><p class="tiny muted">Chaque point est une pesée. Les jours sans mesure ne sont pas estimés.</p><form id="weight-form" class="panel"><h2>'+(ui.weightEdit?'Modifier une pesée':'Noter une pesée')+'</h2><div class="two-col"><label class="field"><span>Date de la pesée</span><input name="date" type="date" value="'+ui.weightDate+'" max="'+C.localDate()+'" required></label><label class="field"><span>Poids · kg</span><input name="kg" type="text" inputmode="decimal" maxlength="7" placeholder="Ex. 78,3" value="'+esc(ui.weightInput)+'" required></label></div><p id="existing-weight" class="small muted">'+(existing?'Mesure existante : '+kg(existing.kg)+' kg.':'')+'</p><p class="form-error" role="alert"></p><button class="primary" type="submit" id="save-weight">'+(existing?'Mettre à jour cette pesée':'Ajouter cette pesée')+'</button>'+(ui.weightEdit?'<button type="button" class="text-btn" data-action="cancel-weight">Annuler la modification</button>':'')+'</form><div class="section-head"><h2>Mes pesées</h2><span class="small muted">'+rows.length+' mesure'+(rows.length!==1?'s':'')+'</span></div><ul class="weight-list">'+rows.map(w=>'<li class="weight-row"><time datetime="'+w.date+'">'+fmtDate(w.date,true)+' <span class="tiny muted">'+w.date.slice(0,4)+'</span></time><button class="text-btn" data-edit-weight="'+w.date+'" aria-label="Modifier la pesée du '+fmtDate(w.date,true)+'"><b>'+kg(w.kg)+' kg</b>'+icon('edit')+'</button><button class="icon-btn" data-delete-weight="'+w.date+'" aria-label="Retirer la pesée du '+fmtDate(w.date,true)+'">'+icon('trash')+'</button></li>').join('')+'</ul>';
+  }
+  function historyView(){const dates=Object.keys(state.days).sort().reverse();return heading('Mes journées','Les petits ajouts font le suivi')+datebar()+'<button class="secondary" data-action="open-selected-day">Voir la journée du '+fmtDate(ui.date,true)+'</button><div class="section-head"><h2>Mon historique</h2><span class="small muted">'+dates.length+' jour'+(dates.length!==1?'s':'')+'</span></div><div class="day-list">'+(dates.length?dates.map(date=>{const d=state.days[date],total=C.dayTotal(d);return '<button class="day-row" data-open-day="'+date+'"><div class="row"><b>'+fmtDate(date,true)+' <span class="tiny muted">'+date.slice(0,4)+'</span></b><strong>'+num(total)+' <small>kcal</small></strong></div><div class="day-progress"><span style="width:'+Math.min(100,total/d.limit*100)+'%"></span></div><div class="row small muted"><span>'+d.entries.length+' ajout'+(d.entries.length!==1?'s':'')+'</span><span>Plafond '+num(d.limit)+(total>d.limit?' · +'+num(total-d.limit):'')+' kcal</span></div></button>';}).join(''):'<div class="empty">Ton historique apparaîtra après ton premier ajout.</div>')+'</div><p class="small muted source-note">Chaque journée garde son plafond. Tu peux ouvrir une date passée pour corriger un oubli.</p>';}
+  function settingsView(){const last=C.latestWeight(state);return heading('Mes réglages','Un suivi qui me ressemble')+'<form id="settings-form" class="settings-section"><h2>Mon profil</h2><label class="field"><span>Plafond quotidien · kcal</span><input name="limit" type="number" min="1" max="20000" step="1" inputmode="numeric" value="'+state.settings.limit+'" required></label><p class="small muted">Tu choisis ton plafond. La valeur initiale de 2 000 kcal est à personnaliser.</p><label class="field"><span>Taille · cm (facultatif)</span><input name="height" type="text" inputmode="decimal" placeholder="À renseigner" value="'+(state.settings.height??'')+'"></label><div class="row"><div><b>Dernier poids mesuré</b><p class="small muted">'+(last?kg(last.kg)+' kg · '+fmtDate(last.date,true):'Aucune pesée')+'</p></div><button type="button" class="text-btn" data-tab="weight">Mon suivi '+icon('right')+'</button></div><p class="form-error" role="alert"></p><button type="submit" class="primary">Enregistrer mes réglages</button><p class="tiny muted">Le plafond change pour aujourd’hui et les nouvelles journées. Les jours passés conservent leur valeur.</p></form><section class="settings-section"><h2>Mes données</h2><p class="small muted">Tes calories, tes favoris et tes pesées restent dans ce navigateur, sur cet appareil. Aucun compte, aucune synchronisation entre téléphones.</p><div class="backup-info"><b>Ma copie de secours</b><p class="small muted">'+(state.lastBackupAt?'Dernier export préparé : '+new Date(state.lastBackupAt).toLocaleString('fr-CH'):'Aucun export préparé pour le moment.')+'</p></div><button class="secondary" data-action="export">'+icon('download')+' Exporter ma sauvegarde</button><button class="secondary" data-action="choose-import">'+icon('upload')+' Restaurer une sauvegarde</button><input type="file" id="import-file" accept="application/json,.json" hidden><p class="tiny muted">Conserve le fichier dans Fichiers ou iCloud Drive. Effacer les données Safari peut supprimer ton carnet ; une copie de secours permet de le retrouver.</p><button class="text-btn" data-action="persist">'+(storagePersistent?'Stockage persistant confirmé':"Demander la conservation du stockage")+'</button></section><section class="settings-section"><h2>Pomme sur mon iPhone</h2><p class="install-note small">Dans Safari : ouvre le menu de partage, puis choisis « Sur l’écran d’accueil ». Ouvre ensuite Pomme depuis cette icône. Si tu changes de mode d’ouverture et que ton carnet est vide, utilise ta sauvegarde pour le transférer.</p><button class="secondary" data-action="share">'+icon('share')+' Partager le lien de Pomme</button><p class="tiny muted">Partager le lien ne partage aucune de tes données.</p></section><details class="settings-section"><summary>Sources des aliments</summary><p class="source-note">'+sourceHTML({label:'ANSES · Table Ciqual 2025 (fichier source)',url:catalogue.sources[0].url})+'. Licence Ouverte Etalab 2.0. '+esc(catalogue.sources[0].note)+'</p></details>';}
+  function render(){nav.innerHTML=navHTML();main.innerHTML=ui.tab==='day'?dayView():ui.tab==='foods'?foodsView():ui.tab==='weight'?weightView():ui.tab==='history'?historyView():settingsView();if(ui.tab==='weight')requestAnimationFrame(drawWeight);}
+  function drawWeight(){
+    const svg=main.querySelector('.weight-chart');if(!svg)return;
+    const rows=[...state.weights].sort((a,b)=>a.date.localeCompare(b.date)),w=Math.max(270,svg.clientWidth||360),h=220,p={l:48,r:18,t:24,b:40};svg.setAttribute('viewBox',`0 0 ${w} ${h}`);
+    if(!rows.length){svg.innerHTML='<text x="50%" y="48%" text-anchor="middle" fill="var(--muted)" font-size="14">Le début de ta courbe</text><text x="50%" y="60%" text-anchor="middle" fill="var(--muted)" font-size="12">Ajoute une pesée ci-dessous.</text>';return;}
+    const stamps=rows.map(r=>new Date(r.date+'T12:00:00').getTime()),values=rows.map(r=>r.kg),min=Math.min(...values),max=Math.max(...values),pad=Math.max(.5,(max-min)*.18),lo=Math.max(0,min-pad),hi=max+pad;
+    const x=i=>stamps.at(-1)===stamps[0]?(p.l+w-p.r)/2:p.l+(stamps[i]-stamps[0])/(stamps.at(-1)-stamps[0])*(w-p.l-p.r),y=v=>h-p.b-(v-lo)/(hi-lo)*(h-p.t-p.b);
+    let s='<text x="'+p.l+'" y="13" font-size="11" fill="var(--muted)">Poids · kg</text>';
+    for(let i=0;i<4;i++){const v=lo+(hi-lo)*i/3,yy=y(v);s+='<line x1="'+p.l+'" y1="'+yy+'" x2="'+(w-p.r)+'" y2="'+yy+'" stroke="var(--line)"/><text x="'+(p.l-7)+'" y="'+(yy+4)+'" text-anchor="end" font-size="11" fill="var(--muted)">'+num(v,1)+'</text>';}
+    if(rows.length>1)s+='<polyline fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linejoin="round" points="'+rows.map((r,i)=>x(i)+','+y(r.kg)).join(' ')+'"/>';
+    s+=rows.map((r,i)=>'<circle cx="'+x(i)+'" cy="'+y(r.kg)+'" r="4" fill="var(--accent)" stroke="var(--paper)" stroke-width="2"><title>'+esc(fmtDate(r.date)+' : '+kg(r.kg)+' kg')+'</title></circle>').join('');
+    const indices=rows.length===1?[0]:rows.length>3?[0,Math.floor((rows.length-1)/2),rows.length-1]:[0,rows.length-1];
+    indices.forEach((i,j)=>{s+='<text x="'+x(i)+'" y="'+(h-16)+'" text-anchor="'+(indices.length===1?'middle':j===0?'start':j===indices.length-1?'end':'middle')+'" font-size="11" fill="var(--muted)">'+esc(fmtDate(rows[i].date,true))+'</text>';});svg.innerHTML=s;
+  }
+  function closeDialog(){dialog.close();ui.dialog=null;}
+  function modal(title,body,actions,formId,meta={}){
+    if(dialog.open)dialog.close();ui.dialog={...meta};dialog.innerHTML='<form id="'+formId+'"><div class="dialog-head"><h2 id="dialog-title">'+esc(title)+'</h2><button type="button" class="icon-btn" data-action="close-dialog" aria-label="Fermer">'+icon('x')+'</button></div><div class="dialog-body">'+body+'<p class="form-error" role="alert"></p></div><div class="dialog-actions">'+actions+'</div></form>';dialog.showModal();
+  }
+  const field=(label,name,value='',type='text',extra='')=>'<label class="field"><span>'+esc(label)+'</span><input name="'+name+'" type="'+type+'" value="'+esc(value)+'" '+extra+'></label>';
+  const submit=text=>'<button type="submit" class="primary">'+esc(text)+'</button>';
+  function portionDialog(id){const f=findFood(id);if(!f)return;modal(f.name,'<p class="small muted">'+num(f.kcal,1)+' kcal '+esc(basisLabel(f))+'</p>'+field('Quantité · '+amountUnit(f),'amount',f.defaultAmount,'text','inputmode="decimal" required')+field('Date de consommation','date',ui.date,'date','max="'+C.localDate()+'" required')+'<div class="portion-result"><strong id="portion-total">'+num(C.portionCalories(f,f.defaultAmount),1)+'</strong> kcal</div><p class="source-note">'+sourceHTML(f.source)+'</p>',submit('Ajouter à cette journée'),'portion-form',{foodId:id});}
+  function foodDialog(id){const f=id?state.foods.find(x=>x.id===id):null;if(id&&!f)return;modal(f?'Modifier mon aliment':'Mon nouvel aliment',field('Nom','name',f?.name||'','text','maxlength="120" required')+field('Calories de référence · kcal','kcal',f?.kcal??'','text','inputmode="decimal" required')+'<label class="field"><span>Ces calories correspondent à</span><select name="basis" aria-label="Ces calories correspondent à">'+[['100g','100 grammes'],['100ml','100 millilitres'],['portion','1 portion']].map(([v,t])=>'<option value="'+v+'" '+(f?.basis===v?'selected':'')+'>'+t+'</option>').join('')+'</select></label>'+field('Nom de la portion (si applicable)','portionName',f?.portionName||'portion','text','maxlength="80"')+field('Quantité proposée lors d’un ajout','defaultAmount',f?.defaultAmount??100,'text','inputmode="decimal" required')+'<p class="form-note">En grammes, millilitres ou nombre de portions selon ton choix. Pour une portion individuelle, indique 1.</p>',submit('Enregistrer cet aliment')+(f?'<button type="button" class="text-btn danger" data-delete-food="'+esc(id)+'">Supprimer cet aliment</button>':''),'food-form',{foodId:id||null});}
+  function entryDialog(id,date){const e=state.days[date]?.entries.find(x=>x.id===id);if(!e)return;modal('Modifier cet ajout',field('Aliment ou repas','name',e.name,'text','maxlength="120" required')+field('Calories · kcal','kcal',e.kcal,'text','inputmode="decimal" required')+field('Portion ou note','portion',e.portion,'text','maxlength="160"')+field('Date','date',date,'date','max="'+C.localDate()+'" required'),submit('Enregistrer la correction'),'entry-form',{entryId:id,date});}
+  function errorIn(form,error){form.querySelector('.form-error').textContent=error.message||String(error);}
+  function numberIn(value,label,min,max){const n=C.decimal(value);if(!Number.isFinite(n)||n<min||n>max)throw Error(label+' : indique une valeur entre '+min+' et '+max+'.');return n;}
+  function checkedDate(value){if(!C.validDate(value)||value>C.localDate())throw Error('Choisis une date passée ou aujourd’hui.');return value;}
+  async function exportBackup(){
+    const blob=new Blob([JSON.stringify(C.makeBackup(state),null,2)],{type:'application/json'});if(blob.size>5*1024*1024){const error=Error('Ce carnet dépasse la limite de sauvegarde de 5 Mo. Aucune donnée n’a été effacée.');if(dialog.open)errorIn(dialog.querySelector('form'),error);tell(error.message);return;}const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='pomme-sauvegarde-'+C.localDate()+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),60000);
+    await save(d=>{d.lastBackupAt=new Date().toISOString();},'Sauvegarde préparée. Conserve le fichier téléchargé dans Fichiers ou iCloud Drive.');
+  }
+  async function prepareImport(file){if(!file)return;try{if(file.size>5*1024*1024)throw Error('Le fichier dépasse 5 Mo.');const incoming=C.parseBackup(await file.text());const count=Object.values(incoming.days).reduce((n,d)=>n+d.entries.length,0);modal('Restaurer ma sauvegarde','<p>Ce fichier contient <b>'+count+' ajouts</b>, <b>'+incoming.weights.length+' pesées</b> et <b>'+incoming.foods.length+' aliments personnels</b>.</p><p class="notice">La restauration remplace tout le carnet présent sur cet appareil. Exporte-le d’abord si tu souhaites le conserver.</p><button type="button" class="secondary" data-action="export">Exporter le carnet actuel</button>',submit('Remplacer mon carnet')+'<button type="button" class="text-btn" data-action="close-dialog">Annuler</button>','import-form',{incoming});}catch(e){tell('Sauvegarde non restaurée : '+e.message);}}
+  function updateWeightHint(){const form=document.getElementById('weight-form');if(!form)return;const existing=state.weights.find(w=>w.date===ui.weightDate);document.getElementById('existing-weight').textContent=existing?'Mesure existante : '+kg(existing.kg)+' kg.':'';document.getElementById('save-weight').textContent=existing?'Mettre à jour cette pesée':'Ajouter cette pesée';}
+  document.addEventListener('input',e=>{
+    const t=e.target;
+    if(t.id==='entry-name')ui.entryName=t.value;
+    if(t.id==='food-search'){ui.search=t.value;document.getElementById('food-list').innerHTML=foodRows();}
+    if(t.closest('#weight-form')){if(t.name==='kg')ui.weightInput=t.value;if(t.name==='date'){ui.weightDate=t.value;updateWeightHint();}}
+    if(t.closest('#portion-form')&&t.name==='amount'){const f=findFood(ui.dialog?.foodId),amount=C.decimal(t.value);try{document.getElementById('portion-total').textContent=Number.isFinite(amount)&&amount>0?num(C.portionCalories(f,amount),1):'—';dialog.querySelector('.form-error').textContent='';}catch(error){document.getElementById('portion-total').textContent='—';errorIn(dialog.querySelector('form'),error);}}
+  });
+  document.addEventListener('change',e=>{const t=e.target;if(t.id==='day-date'){try{ui.date=checkedDate(t.value);render();}catch(error){tell(error.message);t.value=ui.date;}}if(t.id==='import-file')prepareImport(t.files[0]);});
+  document.addEventListener('click',async e=>{
+    const b=e.target.closest('button');if(!b)return;
+    if(b.dataset.tab){go(b.dataset.tab);return;}
+    const a=b.dataset.action;
+    if(a==='close-dialog'){closeDialog();return;}if(a==='dismiss-toast'){toastEl.hidden=true;return;}
+    if(busy)return;
+    if(b.dataset.key){const k=b.dataset.key;ui.digits=k==='C'?'':k==='delete'?ui.digits.slice(0,-1):(ui.digits==='0'?'':ui.digits)+k;ui.digits=ui.digits.slice(0,5);document.getElementById('calorie-display').innerHTML=(ui.digits?num(Number(ui.digits)):0)+' <small>kcal</small>';const add=document.getElementById('add-calories');add.disabled=!ui.digits;add.innerHTML=icon('plus')+' Ajouter'+(ui.digits?' '+num(Number(ui.digits))+' kcal':' des calories');return;}
+    if(b.dataset.portion){portionDialog(b.dataset.portion);return;}
+    if(b.dataset.filter){ui.foodFilter=b.dataset.filter;render();return;}
+    if(b.dataset.favorite){const id=b.dataset.favorite;await save(d=>{d.settings.favoriteIds=d.settings.favoriteIds.includes(id)?d.settings.favoriteIds.filter(x=>x!==id):[...d.settings.favoriteIds,id];});return;}
+    if(b.dataset.editFood){foodDialog(b.dataset.editFood);return;}
+    if(b.dataset.editEntry){entryDialog(b.dataset.editEntry,b.dataset.date);return;}
+    if(b.dataset.deleteEntry){const id=b.dataset.deleteEntry,date=b.dataset.date;let removed;const ok=await save(d=>{const day=d.days[date],i=day?.entries.findIndex(x=>x.id===id);if(i==null||i<0)throw Error('Cet ajout n’existe plus.');removed=day.entries.splice(i,1)[0];},null,()=>{});if(ok)tell('Ajout retiré.',{label:'Annuler',run:()=>save(d=>{const day=ensureDay(d,date);if(!day.entries.some(x=>x.id===removed.id))day.entries.push(removed);},'Ajout rétabli.')});return;}
+    if(b.dataset.openDay){ui.date=b.dataset.openDay;go('day');return;}
+    if(b.dataset.editWeight){const r=state.weights.find(w=>w.date===b.dataset.editWeight);if(r){ui.weightEdit=r.date;ui.weightDate=r.date;ui.weightInput=String(r.kg);render();document.querySelector('#weight-form input[name="kg"]').focus();}return;}
+    if(b.dataset.deleteWeight){const date=b.dataset.deleteWeight;let removed;const ok=await save(d=>{const i=d.weights.findIndex(w=>w.date===date);if(i<0)throw Error('Cette pesée n’existe plus.');removed=d.weights.splice(i,1)[0];},null,()=>{if(ui.weightEdit===date){ui.weightEdit=null;ui.weightDate=C.localDate();ui.weightInput='';}});if(ok)tell('Pesée retirée.',{label:'Annuler',run:()=>save(d=>{if(d.weights.some(w=>w.date===date))throw Error('Une pesée existe déjà à cette date.');d.weights.push(removed);},'Pesée rétablie.')});return;}
+    if(b.dataset.deleteFood){const f=findFood(b.dataset.deleteFood);modal('Supprimer cet aliment ?','<p>'+esc(f.name)+'</p><p class="small muted">Les calories déjà ajoutées à ton historique seront conservées.</p>',submit('Supprimer cet aliment')+'<button type="button" class="text-btn" data-action="close-dialog">Annuler</button>','delete-food-form',{foodId:f.id});return;}
+    if(a==='new-food')foodDialog();
+    if(a==='previous-day'){ui.date=shiftDate(ui.date,-1);render();}if(a==='next-day'&&ui.date<C.localDate()){ui.date=shiftDate(ui.date,1);render();}if(a==='today'){ui.date=C.localDate();render();}if(a==='open-selected-day')go('day');
+    if(a==='add-calories'&&ui.digits){const entry={id:uid(),name:ui.entryName.trim()||'Ajout libre',portion:'Calories saisies',kcal:Number(ui.digits),createdAt:new Date().toISOString()},date=ui.date;await save(d=>{ensureDay(d,date).entries.push(entry);},'Calories ajoutées.',()=>{ui.digits='';ui.entryName='';});}
+    if(a==='cancel-weight'){ui.weightEdit=null;ui.weightDate=C.localDate();ui.weightInput='';render();}
+    if(a==='export')await exportBackup();if(a==='choose-import')document.getElementById('import-file').click();
+    if(a==='toast-action'){const action=toastAction;toastEl.hidden=true;toastAction=null;if(action)await action.run();}
+    if(a==='persist'){try{storagePersistent=!!(await navigator.storage?.persist?.());render();tell(storagePersistent?'Le navigateur a accordé le stockage persistant. Garde aussi une copie de secours.':'Cette option n’a pas été accordée par le navigateur. Utilise l’export pour garder une copie de secours.');}catch{tell('Conserve une copie de secours avec le bouton Exporter.');}}
+    if(a==='share'){const url=location.origin+location.pathname;try{if(navigator.share)await navigator.share({title:'Pomme — Calories & poids',url});else if(navigator.clipboard){await navigator.clipboard.writeText(url);tell('Lien de Pomme copié.');}else modal('Le lien de Pomme',field('À copier et partager','url',url,'text','readonly'),'<button type="button" class="primary" data-action="close-dialog">Fermer</button>','share-form');}catch(error){if(error.name!=='AbortError')tell('Copie le lien dans la barre d’adresse de Safari.');}}
+    if(a==='retry')location.reload();
+  });
+  document.addEventListener('submit',async e=>{
+    const form=e.target;if(!form.id)return;e.preventDefault();if(busy)return;
+    const data=new FormData(form),v=name=>String(data.get(name)??'').trim();
+    try{
+      form.querySelector('.form-error').textContent='';
+      if(form.id==='portion-form'){const f=findFood(ui.dialog.foodId),amount=numberIn(v('amount'),'Quantité',.01,100000),date=checkedDate(v('date'));if(!f)throw Error('Cet aliment n’existe plus.');const entry={id:uid(),name:f.name,kcal:C.portionCalories(f,amount),portion:num(amount,2)+' '+amountUnit(f),createdAt:new Date().toISOString(),foodId:f.id};await save(d=>{ensureDay(d,date).entries.push(entry);},'Aliment ajouté au '+fmtDate(date,true)+'.',()=>{ui.date=date;closeDialog();});}
+      if(form.id==='food-form'){const id=ui.dialog.foodId,old=id?state.foods.find(x=>x.id===id):null,basis=v('basis');if(!v('name'))throw Error('Donne un nom à ton aliment.');const f={id:id||uid(),name:v('name'),kcal:numberIn(v('kcal'),'Calories',0,100000),basis,portionName:basis==='portion'?v('portionName'):basis==='100ml'?'ml':'g',defaultAmount:numberIn(v('defaultAmount'),'Quantité',.01,100000),emoji:old?.emoji||'🍽️',source:'Saisie personnelle'};if(basis==='portion'&&!f.portionName)throw Error('Indique le nom de la portion.');await save(d=>{if(id){const i=d.foods.findIndex(x=>x.id===id);if(i<0)throw Error('Cet aliment n’existe plus.');d.foods[i]=f;}else{d.foods.push(f);d.settings.favoriteIds.push(f.id);}},'Aliment enregistré dans tes favoris.',closeDialog);}
+      if(form.id==='entry-form'){const id=ui.dialog.entryId,from=ui.dialog.date,date=checkedDate(v('date')),kcal=numberIn(v('kcal'),'Calories',0,100000),name=v('name'),portion=v('portion');if(!name)throw Error('Indique le nom de cet ajout.');await save(d=>{const i=d.days[from]?.entries.findIndex(x=>x.id===id);if(i==null||i<0)throw Error('Cet ajout n’existe plus.');const entry=d.days[from].entries.splice(i,1)[0];ensureDay(d,date).entries.push({...entry,name,portion,kcal});},'Correction enregistrée.',()=>{ui.date=date;closeDialog();});}
+      if(form.id==='settings-form'){const limit=numberIn(v('limit'),'Plafond',1,20000),height=v('height')?numberIn(v('height'),'Taille',20,300):null;if(!Number.isInteger(limit))throw Error('Indique un plafond en calories entières.');await save(d=>{d.settings.limit=limit;d.settings.height=height;const today=C.localDate();if(d.days[today])d.days[today].limit=limit;},'Réglages enregistrés.');}
+      if(form.id==='weight-form'){const date=checkedDate(v('date')),value=numberIn(v('kg'),'Poids',1,1000),oldDate=ui.weightEdit;if(Math.abs(value*100-Math.round(value*100))>.000001)throw Error('Utilise au maximum deux chiffres après la virgule.');await save(d=>{if(oldDate&&oldDate!==date&&d.weights.some(w=>w.date===date))throw Error('Une pesée existe déjà à cette nouvelle date. Modifie-la directement.');if(oldDate&&oldDate!==date)d.weights=d.weights.filter(w=>w.date!==oldDate);const i=d.weights.findIndex(w=>w.date===date),r={date,kg:value};if(i<0)d.weights.push(r);else d.weights[i]=r;},'Pesée enregistrée : '+kg(value)+' kg le '+fmtDate(date,true)+'.',()=>{ui.weightEdit=null;ui.weightDate=C.localDate();ui.weightInput='';});}
+      if(form.id==='delete-food-form'){const id=ui.dialog.foodId;await save(d=>{d.foods=d.foods.filter(f=>f.id!==id);d.settings.favoriteIds=d.settings.favoriteIds.filter(x=>x!==id);},'Aliment personnel supprimé.',closeDialog);}
+      if(form.id==='import-form'){const incoming=ui.dialog.incoming;await save(()=>incoming,'Sauvegarde restaurée.',()=>{ui.date=C.localDate();ui.digits='';ui.entryName='';ui.weightEdit=null;ui.weightInput='';ui.weightDate=C.localDate();closeDialog();});}
+    }catch(error){errorIn(form,error);}
+  });
+  dialog.addEventListener('cancel',()=>{ui.dialog=null;});
+  async function refresh(){if(busy||!db)return;try{const latest=await C.readDB(db);if(latest&&latest.updatedAt!==state.updatedAt){state=latest;render();}const today=C.localDate();if(today!==lastToday){if(ui.date===lastToday&&!ui.digits&&!ui.entryName)ui.date=today;if(ui.weightDate===lastToday&&!ui.weightInput&&!ui.weightEdit)ui.weightDate=today;lastToday=today;render();}}catch{setStatus('Relecture impossible',true);}}
+  async function start(){try{db=await C.openDB();const existing=await C.readDB(db);if(existing)state=existing;else{state.settings.favoriteIds=['ciqual-13039','ciqual-19593','ciqual-7110'];await C.writeDB(db,state);}storagePersistent=!!(await navigator.storage?.persisted?.());render();setStatus('Sur cet appareil');if('BroadcastChannel' in window){channel=new BroadcastChannel('pomme-data');channel.onmessage=refresh;}window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});setInterval(refresh,60000);if('serviceWorker'in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(error){setStatus('Stockage indisponible',true);main.innerHTML='<div class="error-panel"><h1>Ton carnet ne peut pas s’ouvrir</h1><p>Pomme a besoin du stockage de ce navigateur pour conserver tes données. Vérifie que le stockage du site est autorisé, puis réessaie.</p><p class="small muted">'+esc(error.message)+'</p><button class="primary" data-action="retry">Réessayer</button></div>';}}
+  start();
+})();
+</script>
+</body>
+</html>
