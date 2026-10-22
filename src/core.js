@@ -4,10 +4,14 @@
   const DB_NAME = 'pomme-local-v1';
   const STORE_NAME = 'state';
   const STATE_KEY = 'singleton';
+  // Data format only: keep the IndexedDB name/version/store unchanged. Older
+  // app tabs reject newer formats instead of discarding unknown fields on writes.
+  const SCHEMA_VERSION = 3;
   const MAX_BACKUP_BYTES = 5 * 1024 * 1024;
   const MAX_DAYS = 20000;
   const MAX_WEIGHTS = 20000;
   const MAX_FOODS = 2000;
+  const MAX_FAVORITES = 9;
   const MAX_ENTRIES_PER_DAY = 1000;
   const FORBIDDEN_KEYS = ['__proto__', 'prototype', 'constructor'];
 
@@ -45,6 +49,12 @@
     if (typeof value !== 'number' || !Number.isFinite(value) || value > max || (exclusiveMin ? value <= min : value < min)) {
       invalid(label + ' est hors limites.');
     }
+    return value;
+  }
+
+  function integer(value, min, max, label) {
+    number(value, min, max, label);
+    if (!Number.isInteger(value)) invalid(label + ' doit être un nombre entier.');
     return value;
   }
 
@@ -106,8 +116,8 @@
 
   function blankState() {
     return {
-      schemaVersion: 1,
-      settings: { limit: 2000, height: null, favoriteIds: [] },
+      schemaVersion: SCHEMA_VERSION,
+      settings: { limit: 2000, height: null, favoriteIds: [], username: '', avatar: '🍎', sex: '', age: null, stepsBaseline: null },
       days: {},
       foods: [],
       weights: [],
@@ -116,14 +126,41 @@
     };
   }
 
+  // The limit only applies to new selections. Older saved lists stay intact.
+  function setFavorite(state, favoriteId, selected) {
+    const settings = record(state.settings, 'les réglages');
+    const cleanId = id(favoriteId, 'un identifiant de favori');
+    if (typeof selected !== 'boolean') invalid('la sélection du favori');
+    const favorites = settings.favoriteIds === undefined ? [] : list(settings.favoriteIds, MAX_FOODS, 'les favoris');
+    const alreadySelected = favorites.includes(cleanId);
+    if (selected && !alreadySelected) {
+      if (favorites.length >= MAX_FAVORITES) {
+        throw new Error('Vous pouvez sélectionner jusqu’à 9 favoris. Retirez-en un avant d’en ajouter.');
+      }
+      settings.favoriteIds = favorites.concat(cleanId);
+    } else if (!selected && alreadySelected) settings.favoriteIds = favorites.filter(value => value !== cleanId);
+  }
+
+  function hasQuantityMetadata(entry) {
+    return ['quantity', 'unitKcal', 'quantityUnit'].some(key => Object.prototype.hasOwnProperty.call(entry, key));
+  }
+
   // Rebuild the complete persisted schema; no spread/merge of imported objects.
   function validateState(input) {
     record(input, 'la sauvegarde');
-    if (input.schemaVersion !== 1) invalid('version de sauvegarde non prise en charge.');
+    if (![1, 2, SCHEMA_VERSION].includes(input.schemaVersion)) invalid('version de sauvegarde non prise en charge.');
     const settings = record(input.settings, 'les réglages');
     const clean = blankState();
     clean.settings.limit = number(settings.limit, 1, 20000, 'le plafond quotidien');
     clean.settings.height = settings.height === null ? null : number(settings.height, 20, 300, 'la taille');
+    clean.settings.username = settings.username === undefined ? '' : text(settings.username, 'le nom d’utilisateur', 40, true);
+    clean.settings.avatar = settings.avatar === undefined ? '🍎' : text(settings.avatar, 'l’avatar', 32, false);
+    const sex = settings.sex === undefined ? '' : settings.sex;
+    if (!['', 'female', 'male', 'other'].includes(sex)) invalid('le sexe');
+    clean.settings.sex = sex;
+    clean.settings.age = settings.age === undefined || settings.age === null ? null : integer(settings.age, 1, 120, 'l’âge');
+    // Legacy step settings remain in saved data and backups, without affecting budgets.
+    clean.settings.stepsBaseline = settings.stepsBaseline === undefined || settings.stepsBaseline === null ? null : integer(settings.stepsBaseline, 0, 100000, 'le seuil de pas habituel');
     const favorites = settings.favoriteIds === undefined ? [] : list(settings.favoriteIds, MAX_FOODS, 'les favoris');
     const favoriteIds = new Set();
     clean.settings.favoriteIds = favorites.map(value => {
@@ -157,8 +194,18 @@
           createdAt: timestamp(entry.createdAt, 'la date de création de la consommation', false)
         };
         if (entry.foodId !== undefined) cleanEntry.foodId = id(entry.foodId, 'un identifiant d’aliment');
+        if (hasQuantityMetadata(entry)) {
+          const details = entryQuantity(entry);
+          const total = quantityCalories(details.unitKcal, details.quantity);
+          if (roundCalories(cleanEntry.kcal) !== total) invalid('les calories ne correspondent pas à la quantité.');
+          cleanEntry.kcal = total;
+          cleanEntry.quantity = details.quantity;
+          cleanEntry.unitKcal = details.unitKcal;
+          cleanEntry.quantityUnit = details.quantityUnit;
+        }
         return cleanEntry;
       });
+      if (Object.prototype.hasOwnProperty.call(day, 'activity')) cleanDay.activity = validateActivity(day.activity);
       clean.days[date] = cleanDay;
     }
 
@@ -196,7 +243,7 @@
   }
 
   function makeBackup(state) {
-    return { app: 'pomme', version: 1, exportedAt: new Date().toISOString(), data: validateState(state) };
+    return { app: 'pomme', version: SCHEMA_VERSION, exportedAt: new Date().toISOString(), data: validateState(state) };
   }
 
   // JSON.parse keeps only the last repeated object key. Reject such files before
@@ -243,7 +290,7 @@
     catch (_) { invalid('le fichier JSON est illisible.'); }
     rejectDuplicateJSONKeys(value);
     record(envelope, 'le fichier de sauvegarde');
-    if (envelope.app !== 'pomme' || envelope.version !== 1) invalid('ce fichier n’est pas une sauvegarde Pomme compatible.');
+    if (envelope.app !== 'pomme' || ![1, 2, SCHEMA_VERSION].includes(envelope.version)) invalid('ce fichier n’est pas une sauvegarde Pomme compatible.');
     timestamp(envelope.exportedAt, 'la date d’export', false);
     return validateState(envelope.data);
   }
@@ -255,6 +302,29 @@
 
   function roundCalories(value) { return Math.round((value + Number.EPSILON) * 100) / 100; }
 
+  function quantityCalories(unitKcal, quantity) {
+    const calories = decimal(unitKcal);
+    const amount = decimal(quantity);
+    number(calories, 0, 100000, 'les calories par unité');
+    number(amount, 0, 100000, 'la quantité', true);
+    const result = roundCalories(calories * amount);
+    number(result, 0, 100000, 'les calories de la consommation');
+    return result;
+  }
+
+  // Reading an old entry does not turn it into a new-schema entry in storage.
+  function entryQuantity(entry) {
+    record(entry, 'une consommation');
+    if (!hasQuantityMetadata(entry)) {
+      return { quantity: 1, unitKcal: number(entry.kcal, 0, 100000, 'les calories de la consommation'), quantityUnit: 'portion' };
+    }
+    const quantity = number(entry.quantity, 0, 100000, 'la quantité', true);
+    const unitKcal = number(entry.unitKcal, 0, 100000, 'les calories par unité');
+    const quantityUnit = text(entry.quantityUnit, 'l’unité de quantité', 80, false);
+    quantityCalories(unitKcal, quantity);
+    return { quantity, unitKcal, quantityUnit };
+  }
+
   function dayTotal(day) {
     return roundCalories(day.entries.reduce((sum, entry) => sum + entry.kcal, 0));
   }
@@ -263,14 +333,62 @@
     return state.weights.reduce((latest, weight) => !latest || weight.date > latest.date ? weight : latest, null);
   }
 
+  function weightAtDate(state, date) {
+    dateValue(date, 'la date de référence du poids');
+    return state.weights.reduce((latest, weight) => weight.date <= date && (!latest || weight.date > latest.date) ? weight : latest, null);
+  }
+
+  function estimateStepBonus(steps, baseline, weightKg) {
+    integer(steps, 0, 100000, 'les pas quotidiens');
+    integer(baseline, 0, 100000, 'le seuil de pas');
+    number(weightKg, 1, 1000, 'le poids utilisé pour les pas');
+    return Math.round(weightKg * Math.max(0, steps - baseline) / 3000);
+  }
+
+  function validateActivity(value) {
+    const activity = record(value, 'les pas de la journée');
+    const steps = integer(activity.steps, 0, 100000, 'les pas quotidiens');
+    const baseline = activity.baseline === null ? null : integer(activity.baseline, 0, 100000, 'le seuil de pas');
+    if (typeof activity.enabled !== 'boolean') invalid('la prise en compte des pas');
+    const weightKg = activity.weightKg === null ? null : number(activity.weightKg, 1, 1000, 'le poids utilisé pour les pas');
+    if (activity.enabled && (baseline === null || weightKg === null)) invalid('un seuil de pas et une pesée sont nécessaires pour ajuster le plafond.');
+    const bonusKcal = integer(activity.bonusKcal, 0, 33333, 'le bonus de calories');
+    const expected = activity.enabled ? estimateStepBonus(steps, baseline, weightKg) : 0;
+    if (bonusKcal !== expected) invalid('le bonus de calories ne correspond pas aux pas enregistrés.');
+    return { steps, baseline, enabled: activity.enabled, weightKg, bonusKcal };
+  }
+
+  // Legacy compatibility only: the step interface has been removed. Keep these
+  // recorded inputs together for old backups; dayBudget never applies the bonus.
+  function setDayActivity(state, date, options) {
+    dateValue(date, 'la date des pas');
+    if (date > localDate()) invalid('les pas ne peuvent pas être saisis à une date future.');
+    record(options, 'les réglages des pas');
+    const steps = integer(options.steps, 0, 100000, 'les pas quotidiens');
+    const baseline = options.baseline === null ? null : integer(options.baseline, 0, 100000, 'le seuil de pas');
+    if (typeof options.enabled !== 'boolean') invalid('la prise en compte des pas');
+    const weight = weightAtDate(state, date);
+    const weightKg = weight ? number(weight.kg, 1, 1000, 'le poids utilisé pour les pas') : null;
+    if (options.enabled && (baseline === null || weightKg === null)) invalid('un seuil de pas et une pesée à cette date ou avant sont nécessaires pour ajuster le plafond.');
+    const activity = validateActivity({
+      steps, baseline, enabled: options.enabled, weightKg,
+      bonusKcal: options.enabled ? estimateStepBonus(steps, baseline, weightKg) : 0
+    });
+    const day = state.days[date] || { limit: number(state.settings.limit, 1, 20000, 'le plafond quotidien'), entries: [] };
+    day.activity = activity;
+    state.days[date] = day;
+    return activity;
+  }
+
+  function dayBudget(day) {
+    const base = number(day.limit, 1, 20000, 'le plafond de la journée');
+    return { base, bonus: 0, total: base };
+  }
+
   function portionCalories(food, amount) {
-    const quantity = decimal(amount);
-    number(quantity, 0, 100000, 'la quantité', true);
     number(food.kcal, 0, 100000, 'les calories de l’aliment');
     if (!['100g', '100ml', 'portion'].includes(food.basis)) invalid('l’unité de l’aliment');
-    const result = roundCalories(food.kcal * quantity / (food.basis === 'portion' ? 1 : 100));
-    number(result, 0, 100000, 'les calories de la portion');
-    return result;
+    return quantityCalories(food.kcal / (food.basis === 'portion' ? 1 : 100), amount);
   }
 
   function storageError(error, fallback) {
@@ -387,8 +505,10 @@
   }
 
   root.PommeCore = Object.freeze({
-    DB_NAME, MAX_BACKUP_BYTES, localDate, validDate, decimal, blankState, validateState,
-    makeBackup, parseBackup, getDay, dayTotal, latestWeight, portionCalories,
+    DB_NAME, SCHEMA_VERSION, MAX_BACKUP_BYTES, MAX_FAVORITES, localDate, validDate, decimal, blankState, validateState,
+    makeBackup, parseBackup, getDay, dayTotal, latestWeight, weightAtDate, portionCalories,
+    estimateStepBonus, setDayActivity, dayBudget,
+    setFavorite, quantityCalories, entryQuantity,
     openDB, readDB, writeDB, updateDB
   });
 })(globalThis);
