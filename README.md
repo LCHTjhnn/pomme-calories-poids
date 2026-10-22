@@ -2,6 +2,8 @@
 
 Une petite application en français, adaptée à Safari sur iPhone : journal quotidien des calories, plafond réglable, profil personnalisable, aliments avec icônes et jusqu’à neuf favoris sur l’accueil, saisie au pavé numérique avec quantité, pesées datées et graphique d’évolution. Un bilan rouge indique les dépassements du plafond. Aucune consommation ni pesée de démonstration n’est enregistrée.
 
+La version 6 agrandit le nom **Pomme**, la pomme verte du logo et la signature **Mon carnet quotidien**. Sur l’accueil, l’encadré du profil se trouve sous le titre du journal et sa date, avant le sélecteur de journée. Cette mise à jour est uniquement visuelle.
+
 ## Lien de l’application
 
 Version en ligne : https://pomme-calories-poids.brownpin256.chatgpt.site/
@@ -58,7 +60,7 @@ Safari et une application installée sur l’écran d’accueil peuvent utiliser
 
 Le lien de référence reste https://pomme-calories-poids.brownpin256.chatgpt.site/ . Le nom de la base IndexedDB (`pomme-local-v1`), sa version d’ouverture (`1`), le magasin (`state`) et sa clé (`singleton`) restent identiques ; aucune réinitialisation n’est réalisée.
 
-La version 5 conserve le format de données et de sauvegarde **3**, et accepte toujours les formats **1, 2 et 3**. Les anciennes consommations, favoris, profils, pesées et informations de pas restent conservés. Les valeurs absentes d’un ancien carnet reçoivent les valeurs par défaut prévues par le format. Après une mise à jour, actualiser les onglets Pomme déjà ouverts.
+La version 6 conserve le format de données et de sauvegarde **3**, et accepte toujours les formats **1, 2 et 3**. Les anciennes consommations, favoris, profils, pesées et informations de pas restent conservés. Les valeurs absentes d’un ancien carnet reçoivent les valeurs par défaut prévues par le format. Après une mise à jour, actualiser les onglets Pomme déjà ouverts.
 
 ## Organisation du code
 
@@ -68,7 +70,15 @@ La version 5 conserve le format de données et de sauvegarde **3**, et accepte t
 - `tests/core.test.mjs` : vérifications des calculs, imports et garanties de stockage.
 - `dist/icon.svg` : icône vectorielle originale ; les variantes PNG servent à l’installation.
 
-## Vérifications de la version 5
+## Vérifications de la version 6
+
+La syntaxe de `app.js`, la construction et `git diff --check` ont été vérifiés ; le build porte l’empreinte `6e15c9e1a874`. Le fichier `core.js` est inchangé. La suite de 37 tests, réussie pour la version 5, n’a pas été relancée pour cette modification strictement visuelle.
+
+Dans WebKit, un carnet fictif existant conserve six consommations totalisant 2 415,19 kcal, un plafond de 2 200 kcal, neuf favoris et le profil Camille à 72,2 kg. La veille conserve 100 kcal et son plafond de 2 100 kcal. Le bouton du profil déplacé ouvre toujours **Mon profil**.
+
+Les captures à 320 et 390 pixels confirment l’agrandissement du nom, du logo et de la signature sans chevauchement. L’encadré du profil apparaît après le titre et la date du journal, avant le sélecteur de journée. Aucun essai sur iPhone physique n’a été effectué.
+
+### Référence : vérifications de la version 5
 
 Les **37 tests automatisés du cœur de l’application** réussissent. La syntaxe de `app.js` et la construction ont également été vérifiées ; le build porte l’empreinte `d38ba84896f0`. Les vérifications d’interface ci-dessous sont des essais manuels dans WebKit, avec des données fictives.
 
