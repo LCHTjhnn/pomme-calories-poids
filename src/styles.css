@@ -68,11 +68,14 @@ strong, b { font-weight: 650; }
   padding: calc(19px + env(safe-area-inset-top, 0px)) 22px 18px;
 }
 .brand { display: inline-flex; align-items: center; align-self: flex-start; gap: 8px; min-width: 0; color: var(--ink); font-size: 40px; font-weight: 750; line-height: 1.12; letter-spacing: -1.2px; text-decoration: none; }
-.brand-caption { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; font-weight: 600; line-height: 1.3; letter-spacing: .6px; white-space: nowrap; }
+.brand-caption { display: flex; align-items: center; gap: 6px; margin-top: 5px; color: var(--muted); font-size: 12px; font-weight: 600; line-height: 1.3; letter-spacing: .6px; white-space: nowrap; }
 .brand-icon { display: block; flex: 0 0 80px; width: 80px; height: 80px; border-radius: 20px; background: var(--soft); }
-.save-state { display: flex; align-self: flex-end; align-items: center; justify-content: flex-end; gap: 5px; min-width: 0; max-width: 100%; color: var(--muted); font-size: 11px; line-height: 1.4; text-align: right; }
-.save-state svg { width: 13px; height: 13px; }
-.save-state.error, .save-state.has-error, .save-state[data-state="error"] { color: var(--danger); }
+.brand a { color: inherit; text-decoration: none; }
+.brand-logo-link { flex-shrink: 0; border-radius: 20px; }
+.brand-name { display: block; width: fit-content; }
+.local-device-indicator { display: inline-flex; flex: 0 0 44px; align-items: center; justify-content: flex-start; width: 44px; height: 44px; margin: -13px 0; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--accent); }
+.topbar .local-device-indicator svg { width: 18px; height: 18px; }
+.local-device-indicator.has-error { color: var(--danger); }
 .profile-avatar { display: inline-grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); font-size: 26px; line-height: 1; }
 main#main { padding: 3px 22px 32px; outline: none; }
 .home-profile { width: 100%; margin: 0 0 22px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); text-align: left; }
@@ -338,6 +341,10 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
 .form-note { margin: 10px 0; color: var(--muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
 .emoji-picker { display: grid; grid-template-columns: repeat(6, minmax(44px, 1fr)); gap: 5px; min-width: 0; min-inline-size: 0; width: 100%; margin: 18px 0; padding: 0; border: 0; }
 .emoji-picker legend { display: block; grid-column: 1 / -1; width: 100%; margin-bottom: 9px; padding: 0; color: var(--ink); font-size: 13px; font-weight: 550; }
+.food-icon-picker { gap: 6px; }
+.food-icon-count { float: right; color: var(--muted); font-size: 12px; font-weight: 400; }
+.food-icon-selection { grid-column: 1 / -1; margin-top: 3px; color: var(--muted); font-size: 12px; }
+.food-icon-selection > span { color: var(--ink); font-weight: 550; }
 .emoji-option { position: relative; display: block; min-width: 44px; min-height: 46px; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .emoji-option input[type="radio"] { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; }
 .emoji-option > span { display: grid; place-items: center; width: 100%; min-height: 46px; padding: 5px 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); font-size: 25px; line-height: 1; }
@@ -405,6 +412,7 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
 }
 
 @media (min-width: 360px) and (max-width: 389px) {
+  .food-icon-picker { gap: 5px; }
   .emoji-picker.avatar-picker { gap: 2px; }
 }
 
@@ -431,3 +439,57 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
 
 .favorite-choice { display:flex; align-items:center; gap:10px; min-height:44px; margin-top:16px; font-size:14px; }
 .favorite-choice input { width:22px; height:22px; margin:0; accent-color:var(--accent); }
+
+/* Calendrier et bilan unique de l’historique. */
+.calendar-card {padding:15px 12px 13px;border:1px solid var(--line);border-radius:24px;background:var(--paper);margin-bottom:20px;}
+.calendar-heading {display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.calendar-heading h2 {font-size:19px;text-transform:capitalize;letter-spacing:-.4px;}
+.calendar-nav {display:flex;gap:4px;}
+.calendar-nav .icon-btn {width:44px;min-width:44px;height:44px;min-height:44px;border-radius:12px;}
+.calendar-grid {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px 3px;}
+.weekday {color:var(--muted);text-align:center;font-size:10px;font-weight:500;padding:3px 0 7px;}
+.calendar-day {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:49px;padding:5px 0;border:1px solid transparent;border-radius:13px;background:transparent;color:var(--ink);font-size:13px;font-variant-numeric:tabular-nums;line-height:1.1;}
+.calendar-day.today {border-color:var(--line);font-weight:700;background:#f6f7ef;}
+.calendar-day[aria-pressed="true"] {border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--soft);}
+.calendar-day.quota-over[aria-pressed="true"] {border-color:var(--danger);box-shadow:0 0 0 1px var(--danger);background:var(--danger-soft);}
+.calendar-day:disabled {opacity:1;color:#b5bcb0;}
+.calendar-day:disabled .day-marker {opacity:0;}
+.day-marker {display:inline-grid;place-items:center;width:15px;height:15px;flex-shrink:0;border-radius:50%;font-size:10px;font-weight:750;line-height:1;}
+.day-marker svg {display:block;width:10px;height:10px;}
+.day-marker.ok {background:#dfeedd;color:#256044;}
+.day-marker.over {background:#f9e6e0;color:#a33d32;}
+.day-marker.missing {background:transparent;color:#a3ad9c;font-size:15px;font-weight:400;}
+.day-marker.current {background:transparent;color:var(--accent);font-size:16px;}
+.calendar-legend {display:flex;flex-wrap:wrap;gap:8px 14px;margin:13px 1px 0;padding-top:13px;border-top:1px solid #edf0e9;}
+.calendar-legend > span {display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);}
+.calendar-legend .day-marker {font-size:10px;color:#256044;}
+.calendar-legend .day-marker.over {color:#a33d32;}
+.calendar-legend .day-marker.missing {color:#a3ad9c;font-size:14px;}
+.calendar-note {font-size:10px;color:var(--muted);margin:10px 1px 0;line-height:1.5;}
+.selected-day {margin-top:15px;padding:14px;border:1px solid var(--line);background:#f7f8f3;border-radius:17px;}
+.selected-day.over {background:var(--danger-soft);border-color:#e7cfc8;}
+.selected-day.ok {background:#f1f7ed;}
+.selected-day.over .day-progress {background:#ecd8d1;}
+.selected-day.over .day-progress > span {background:var(--danger);}
+.selected-metrics {display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:12px;}
+.selected-metrics .selected-total {margin:0;}
+.quota-label {font-size:10px;color:var(--muted);text-align:right;line-height:1.45;}
+.quota-label b {font-size:11px;font-weight:550;}
+.selected-day .open-day {min-height:44px;padding-top:6px;}
+.selected-day-title {display:flex;justify-content:space-between;gap:6px;align-items:center;}
+.selected-day-title b {font-size:13px;}
+.day-tag {font-size:10px;color:var(--muted);}
+.selected-total {display:flex;align-items:baseline;gap:5px;margin:8px 0 3px;}
+.selected-total strong {font-size:26px;line-height:1.2;letter-spacing:-.6px;}
+.selected-total small {font-size:11px;color:var(--muted);}
+.selected-day.over .selected-total strong,.selected-day.over .selected-status {color:var(--danger);}
+.selected-day.ok .selected-status {color:var(--accent);}
+.selected-status {font-size:11px;}
+.open-day {display:inline-flex;align-items:center;gap:5px;border:0;padding:8px 0 0;background:transparent;min-height:30px;font-size:11px;font-weight:600;color:var(--accent);}
+.open-day svg {width:13px;height:13px;}
+
+@media(max-width:359px){.calendar-card {padding:13px 9px;}.calendar-grid {gap:4px 2px;}.calendar-day{font-size:12px;min-height:47px;}.calendar-legend{gap:8px 10px;}.calendar-heading h2{font-size:18px;}}
+
+@media (min-width: 320px) and (max-width: 359px) {
+  .food-icon-picker {grid-template-columns:repeat(6,minmax(44px,1fr));gap:4px;width:calc(100% + 32px);margin-left:-16px;margin-right:-16px;}
+}

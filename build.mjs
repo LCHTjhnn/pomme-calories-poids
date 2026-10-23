@@ -1,7 +1,7 @@
 import {readFile,writeFile,mkdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 await mkdir('dist',{recursive:true});
-const scripts=(await Promise.all(['core.js','foods.js','app.js'].map(f=>readFile('src/'+f,'utf8')))).join('\n');
+const scripts=(await Promise.all(['core.js','history.js','foods.js','food-icons.js','app.js'].map(f=>readFile('src/'+f,'utf8')))).join('\n');
 const styles=await readFile('src/styles.css','utf8');
 const shell=await readFile('src/shell.html','utf8');
 const html=shell.replace('/*__STYLES__*/',styles).replace('/*__SCRIPTS__*/',scripts.replace(/<\/script/gi,'<\\/script'));

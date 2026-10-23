@@ -84,11 +84,14 @@ strong, b { font-weight: 650; }
   padding: calc(19px + env(safe-area-inset-top, 0px)) 22px 18px;
 }
 .brand { display: inline-flex; align-items: center; align-self: flex-start; gap: 8px; min-width: 0; color: var(--ink); font-size: 40px; font-weight: 750; line-height: 1.12; letter-spacing: -1.2px; text-decoration: none; }
-.brand-caption { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; font-weight: 600; line-height: 1.3; letter-spacing: .6px; white-space: nowrap; }
+.brand-caption { display: flex; align-items: center; gap: 6px; margin-top: 5px; color: var(--muted); font-size: 12px; font-weight: 600; line-height: 1.3; letter-spacing: .6px; white-space: nowrap; }
 .brand-icon { display: block; flex: 0 0 80px; width: 80px; height: 80px; border-radius: 20px; background: var(--soft); }
-.save-state { display: flex; align-self: flex-end; align-items: center; justify-content: flex-end; gap: 5px; min-width: 0; max-width: 100%; color: var(--muted); font-size: 11px; line-height: 1.4; text-align: right; }
-.save-state svg { width: 13px; height: 13px; }
-.save-state.error, .save-state.has-error, .save-state[data-state="error"] { color: var(--danger); }
+.brand a { color: inherit; text-decoration: none; }
+.brand-logo-link { flex-shrink: 0; border-radius: 20px; }
+.brand-name { display: block; width: fit-content; }
+.local-device-indicator { display: inline-flex; flex: 0 0 44px; align-items: center; justify-content: flex-start; width: 44px; height: 44px; margin: -13px 0; padding: 0; border: 0; border-radius: 8px; background: transparent; color: var(--accent); }
+.topbar .local-device-indicator svg { width: 18px; height: 18px; }
+.local-device-indicator.has-error { color: var(--danger); }
 .profile-avatar { display: inline-grid; place-items: center; flex: 0 0 44px; width: 44px; height: 44px; padding: 0; border: 1px solid var(--line); border-radius: 16px; background: var(--paper); font-size: 26px; line-height: 1; }
 main#main { padding: 3px 22px 32px; outline: none; }
 .home-profile { width: 100%; margin: 0 0 22px; padding: 13px 15px; border: 1px solid var(--line); border-radius: 20px; background: var(--paper); text-align: left; }
@@ -354,6 +357,10 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
 .form-note { margin: 10px 0; color: var(--muted); font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
 .emoji-picker { display: grid; grid-template-columns: repeat(6, minmax(44px, 1fr)); gap: 5px; min-width: 0; min-inline-size: 0; width: 100%; margin: 18px 0; padding: 0; border: 0; }
 .emoji-picker legend { display: block; grid-column: 1 / -1; width: 100%; margin-bottom: 9px; padding: 0; color: var(--ink); font-size: 13px; font-weight: 550; }
+.food-icon-picker { gap: 6px; }
+.food-icon-count { float: right; color: var(--muted); font-size: 12px; font-weight: 400; }
+.food-icon-selection { grid-column: 1 / -1; margin-top: 3px; color: var(--muted); font-size: 12px; }
+.food-icon-selection > span { color: var(--ink); font-weight: 550; }
 .emoji-option { position: relative; display: block; min-width: 44px; min-height: 46px; cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
 .emoji-option input[type="radio"] { position: absolute; z-index: 1; inset: 0; width: 100%; height: 100%; min-height: 0; margin: 0; padding: 0; border: 0; opacity: 0; cursor: pointer; }
 .emoji-option > span { display: grid; place-items: center; width: 100%; min-height: 46px; padding: 5px 0; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); font-size: 25px; line-height: 1; }
@@ -421,6 +428,7 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
 }
 
 @media (min-width: 360px) and (max-width: 389px) {
+  .food-icon-picker { gap: 5px; }
   .emoji-picker.avatar-picker { gap: 2px; }
 }
 
@@ -447,13 +455,70 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
 
 .favorite-choice { display:flex; align-items:center; gap:10px; min-height:44px; margin-top:16px; font-size:14px; }
 .favorite-choice input { width:22px; height:22px; margin:0; accent-color:var(--accent); }
+
+/* Calendrier et bilan unique de l’historique. */
+.calendar-card {padding:15px 12px 13px;border:1px solid var(--line);border-radius:24px;background:var(--paper);margin-bottom:20px;}
+.calendar-heading {display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.calendar-heading h2 {font-size:19px;text-transform:capitalize;letter-spacing:-.4px;}
+.calendar-nav {display:flex;gap:4px;}
+.calendar-nav .icon-btn {width:44px;min-width:44px;height:44px;min-height:44px;border-radius:12px;}
+.calendar-grid {display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px 3px;}
+.weekday {color:var(--muted);text-align:center;font-size:10px;font-weight:500;padding:3px 0 7px;}
+.calendar-day {display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-width:0;min-height:49px;padding:5px 0;border:1px solid transparent;border-radius:13px;background:transparent;color:var(--ink);font-size:13px;font-variant-numeric:tabular-nums;line-height:1.1;}
+.calendar-day.today {border-color:var(--line);font-weight:700;background:#f6f7ef;}
+.calendar-day[aria-pressed="true"] {border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);background:var(--soft);}
+.calendar-day.quota-over[aria-pressed="true"] {border-color:var(--danger);box-shadow:0 0 0 1px var(--danger);background:var(--danger-soft);}
+.calendar-day:disabled {opacity:1;color:#b5bcb0;}
+.calendar-day:disabled .day-marker {opacity:0;}
+.day-marker {display:inline-grid;place-items:center;width:15px;height:15px;flex-shrink:0;border-radius:50%;font-size:10px;font-weight:750;line-height:1;}
+.day-marker svg {display:block;width:10px;height:10px;}
+.day-marker.ok {background:#dfeedd;color:#256044;}
+.day-marker.over {background:#f9e6e0;color:#a33d32;}
+.day-marker.missing {background:transparent;color:#a3ad9c;font-size:15px;font-weight:400;}
+.day-marker.current {background:transparent;color:var(--accent);font-size:16px;}
+.calendar-legend {display:flex;flex-wrap:wrap;gap:8px 14px;margin:13px 1px 0;padding-top:13px;border-top:1px solid #edf0e9;}
+.calendar-legend > span {display:inline-flex;align-items:center;gap:5px;font-size:10px;color:var(--muted);}
+.calendar-legend .day-marker {font-size:10px;color:#256044;}
+.calendar-legend .day-marker.over {color:#a33d32;}
+.calendar-legend .day-marker.missing {color:#a3ad9c;font-size:14px;}
+.calendar-note {font-size:10px;color:var(--muted);margin:10px 1px 0;line-height:1.5;}
+.selected-day {margin-top:15px;padding:14px;border:1px solid var(--line);background:#f7f8f3;border-radius:17px;}
+.selected-day.over {background:var(--danger-soft);border-color:#e7cfc8;}
+.selected-day.ok {background:#f1f7ed;}
+.selected-day.over .day-progress {background:#ecd8d1;}
+.selected-day.over .day-progress > span {background:var(--danger);}
+.selected-metrics {display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:12px;}
+.selected-metrics .selected-total {margin:0;}
+.quota-label {font-size:10px;color:var(--muted);text-align:right;line-height:1.45;}
+.quota-label b {font-size:11px;font-weight:550;}
+.selected-day .open-day {min-height:44px;padding-top:6px;}
+.selected-day-title {display:flex;justify-content:space-between;gap:6px;align-items:center;}
+.selected-day-title b {font-size:13px;}
+.day-tag {font-size:10px;color:var(--muted);}
+.selected-total {display:flex;align-items:baseline;gap:5px;margin:8px 0 3px;}
+.selected-total strong {font-size:26px;line-height:1.2;letter-spacing:-.6px;}
+.selected-total small {font-size:11px;color:var(--muted);}
+.selected-day.over .selected-total strong,.selected-day.over .selected-status {color:var(--danger);}
+.selected-day.ok .selected-status {color:var(--accent);}
+.selected-status {font-size:11px;}
+.open-day {display:inline-flex;align-items:center;gap:5px;border:0;padding:8px 0 0;background:transparent;min-height:30px;font-size:11px;font-weight:600;color:var(--accent);}
+.open-day svg {width:13px;height:13px;}
+
+@media(max-width:359px){.calendar-card {padding:13px 9px;}.calendar-grid {gap:4px 2px;}.calendar-day{font-size:12px;min-height:47px;}.calendar-legend{gap:8px 10px;}.calendar-heading h2{font-size:18px;}}
+
+@media (min-width: 320px) and (max-width: 359px) {
+  .food-icon-picker {grid-template-columns:repeat(6,minmax(44px,1fr));gap:4px;width:calc(100% + 32px);margin-left:-16px;margin-right:-16px;}
+}
 </style>
 </head>
 <body>
   <div class="app">
     <header class="topbar">
-      <a class="brand" href="./" aria-label="Pomme, accueil"><img class="brand-icon" src="./icon.svg" width="80" height="80" alt=""><span>Pomme<span class="brand-caption">MON CARNET QUOTIDIEN</span></span></a>
-      <span class="save-state" id="save-state" role="status">Ouverture…</span>
+      <div class="brand">
+        <a class="brand-logo-link" href="./" aria-label="Pomme, accueil"><img class="brand-icon" src="./icon.svg" width="80" height="80" alt=""></a>
+        <div class="brand-copy"><a class="brand-name" href="./">Pomme</a><div class="brand-caption"><span>MON CARNET QUOTIDIEN</span><button type="button" class="local-device-indicator" id="local-device-indicator" data-settings="data" aria-label="Mes données — enregistrées sur cet appareil" aria-describedby="save-state" title="Mes données — enregistrées sur cet appareil" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M10 5h4M11 18h2"/></svg></button></div></div>
+      </div>
+      <span class="sr-only" id="save-state" role="status">Ouverture du carnet sur cet appareil…</span>
     </header>
     <main id="main"><div class="empty"><h1>Bienvenue dans Pomme</h1><p>Ouverture de ton carnet…</p></div></main>
     <nav class="tabbar" id="nav" aria-label="Navigation principale"></nav>
@@ -977,6 +1042,103 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
   });
 })(globalThis);
 
+(function (root) {
+  'use strict';
+
+  const C = root.PommeCore;
+  if (!C) throw new Error('PommeCore doit être chargé avant l’historique.');
+  const MIN_MONTH = '1900-01';
+  const MAX_MONTH = '9999-12';
+
+  function dateValue(value) {
+    if (!C.validDate(value)) throw new TypeError('Date incorrecte pour l’historique.');
+    return value;
+  }
+
+  function monthValue(value) {
+    if (typeof value !== 'string' || !/^\d{4}-\d{2}$/.test(value) ||
+        value < MIN_MONTH || value > MAX_MONTH || !C.validDate(value + '-01')) {
+      throw new TypeError('Mois incorrect pour l’historique.');
+    }
+    return value;
+  }
+
+  function leapYear(year) {
+    return year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+  }
+
+  function monthLength(year, month) {
+    return [31, leapYear(year) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][month - 1];
+  }
+
+  function round(value) {
+    return Math.round((value + Number.EPSILON) * 100) / 100;
+  }
+
+  function daySummary(state, date, today) {
+    dateValue(date);
+    dateValue(today);
+    if (!state || !state.settings || !state.days || typeof state.days !== 'object' || Array.isArray(state.days)) {
+      throw new TypeError('Carnet incorrect pour l’historique.');
+    }
+    // Reading the fallback must not create a stored day, even when it is selected.
+    const day = C.getDay(state, date);
+    if (!Array.isArray(day.entries) || day.entries.some(entry => !entry ||
+        typeof entry.kcal !== 'number' || !Number.isFinite(entry.kcal) || entry.kcal < 0)) {
+      throw new TypeError('Consommations incorrectes pour l’historique.');
+    }
+    const count = day.entries.length;
+    const hasEntries = count > 0;
+    const total = C.dayTotal(day);
+    const limit = C.dayBudget(day).total;
+    const over = total > limit;
+    const status = date > today ? 'future' : date === today ? 'current' :
+      !hasEntries ? 'missing' : over ? 'over' : 'ok';
+    return {
+      date, status, hasEntries, count, total, limit, over,
+      remaining: round(limit - total),
+      percent: Math.max(0, Math.min(100, total / limit * 100))
+    };
+  }
+
+  function monthCells(state, month, today) {
+    monthValue(month);
+    dateValue(today);
+    const [year, number] = month.split('-').map(Number);
+    // Gregorian arithmetic keeps the weekday independent of timezone and DST.
+    const previousYear = year - 1;
+    let elapsedDays = previousYear * 365 + Math.floor(previousYear / 4) -
+      Math.floor(previousYear / 100) + Math.floor(previousYear / 400);
+    for (let preceding = 1; preceding < number; preceding += 1) {
+      elapsedDays += monthLength(year, preceding);
+    }
+    const days = Array.from({ length: monthLength(year, number) }, (_, index) =>
+      daySummary(state, month + '-' + String(index + 1).padStart(2, '0'), today));
+    return { offset: elapsedDays % 7, days };
+  }
+
+  function shiftMonth(month, delta) {
+    monthValue(month);
+    if (!Number.isSafeInteger(delta)) throw new TypeError('Décalage de mois incorrect.');
+    const [year, number] = month.split('-').map(Number);
+    const index = year * 12 + number - 1 + delta;
+    if (index < 1900 * 12 || index > 9999 * 12 + 11) return null;
+    return String(Math.floor(index / 12)).padStart(4, '0') + '-' + String(index % 12 + 1).padStart(2, '0');
+  }
+
+  function selectMonthDate(date, month, today) {
+    dateValue(date);
+    monthValue(month);
+    dateValue(today);
+    const [year, number] = month.split('-').map(Number);
+    const day = Math.min(Number(date.slice(8)), monthLength(year, number));
+    const selected = month + '-' + String(day).padStart(2, '0');
+    return selected > today ? today : selected;
+  }
+
+  root.PommeHistory = Object.freeze({ daySummary, monthCells, shiftMonth, selectMonthDate });
+})(globalThis);
+
 /*
  * Anses. 2025. Table de composition nutritionnelle des aliments Ciqual.
  * Source officielle : édition anglaise datée du 03/11/2025, consultée le 22/10/2026.
@@ -1036,10 +1198,129 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
   };
 }());
 
+(function (root) {
+  'use strict';
+
+  // These emoji values are the original identifiers stored in existing notebooks.
+  const original = [
+    ['🍽️','Assiette'],['☕','Café'],['🥛','Lait'],['🍵','Thé'],['🥤','Boisson'],['💧','Eau'],
+    ['🍎','Pomme'],['🍌','Banane'],['🍊','Orange'],['🍓','Fraise'],['🍞','Pain'],['🥐','Croissant'],
+    ['🥣','Bol'],['🥚','Œuf'],['🧀','Fromage'],['🥩','Viande'],['🍗','Poulet'],['🐟','Poisson'],
+    ['🍚','Riz'],['🍝','Pâtes'],['🥗','Salade'],['🥕','Carotte'],['🍫','Chocolat'],['🍪','Biscuit'],
+    ['🧃','Jus de fruits'],['🍹','Cocktail'],['🍷','Vin'],['🍺','Bière'],['🍐','Poire'],['🍑','Pêche'],
+    ['🍒','Cerises'],['🍇','Raisin'],['🍉','Pastèque'],['🍍','Ananas'],['🥝','Kiwi'],['🍋','Citron'],
+    ['🥑','Avocat'],['🍅','Tomate'],['🥦','Brocoli'],['🥒','Concombre'],['🌽','Maïs'],['🥔','Pomme de terre'],
+    ['🍄','Champignon'],['🥖','Baguette'],['🥯','Bagel'],['🥨','Bretzel'],['🥞','Pancakes'],['🧇','Gaufre'],
+    ['🍳','Œuf au plat'],['🥓','Bacon'],['🍤','Crevette panée'],['🍕','Pizza'],['🍔','Hamburger'],['🥪','Sandwich'],
+    ['🌮','Taco'],['🍣','Sushi'],['🍰','Gâteau'],['🍦','Glace'],['🍯','Miel'],['🥜','Arachides']
+  ];
+
+  // Stable identifiers do not depend on the array order or translated labels.
+  const additions = [
+    ['food-myrtilles','🫐','Myrtilles'],
+    ['food-olive','🫒','Olive'],
+    ['food-noix-de-coco','🥥','Noix de coco'],
+    ['food-melon','🍈','Melon'],
+    ['food-citron-vert','🍋‍🟩','Citron vert'],
+    ['food-gingembre','🫚','Gingembre'],
+    ['food-petits-pois','🫛','Petits pois'],
+    ['food-ail','🧄','Ail'],
+    ['food-oignon','🧅','Oignon'],
+    ['food-poivron','🫑','Poivron'],
+    ['food-legume-feuillu','🥬','Légume feuillu'],
+    ['food-patate-douce','🍠','Patate douce'],
+    ['food-fondue','🫕','Fondue'],
+    ['food-paella','🥘','Paella'],
+    ['food-mijote','🍲','Plat mijoté'],
+    ['food-bol','🥣','Bol'],
+    ['food-curry','🍛','Riz au curry'],
+    ['food-nouilles','🍜','Soupe de nouilles'],
+    ['food-pates','🍝','Pâtes'],
+    ['food-sushi','🍣','Sushi'],
+    ['food-bento','🍱','Bento'],
+    ['food-onigiri','🍙','Boulette de riz'],
+    ['food-riz','🍚','Riz'],
+    ['food-galette-de-riz','🍘','Galette de riz'],
+    ['food-gateau-de-poisson','🍥','Gâteau de poisson'],
+    ['food-ravioli','🥟','Ravioli'],
+    ['food-biscuit-fortune','🥠','Biscuit de fortune'],
+    ['food-plat-a-emporter','🥡','Plat à emporter'],
+    ['food-brochette-oden','🍢','Brochette oden'],
+    ['food-dango','🍡','Brochette de dango'],
+    ['food-huitre','🦪','Huître'],
+    ['food-bonbon','🍬','Bonbon'],
+    ['food-sucette','🍭','Sucette'],
+    ['food-flan','🍮','Flan'],
+    ['food-cupcake','🧁','Cupcake'],
+    ['food-gateau-anniversaire','🎂','Gâteau d’anniversaire'],
+    ['food-glace-pilee','🍧','Glace pilée'],
+    ['food-coupe-glacee','🍨','Coupe glacée'],
+    ['food-tarte','🥧','Tarte'],
+    ['food-theiere','🫖','Théière'],
+    ['food-the','🍵','Thé'],
+    ['food-the-aux-perles','🧋','Thé aux perles'],
+    ['food-sake','🍶','Saké'],
+    ['food-champagne','🍾','Bouteille de champagne'],
+    ['food-coupes-champagne','🥂','Coupes de champagne'],
+    ['food-martini','🍸','Cocktail martini'],
+    ['food-glacon','🧊','Glaçon'],
+    ['food-haricots','🫘','Haricots'],
+    ['food-chataigne','🌰','Châtaigne'],
+    ['food-beurre','🧈','Beurre'],
+    ['food-hot-dog','🌭','Hot-dog'],
+    ['food-pain-plat','🫓','Pain plat'],
+    ['food-bagel','🥯','Bagel'],
+    ['food-conserve','🥫','Conserve'],
+    ['food-crabe','🦀','Crabe'],
+    ['food-homard','🦞','Homard'],
+    ['food-calamar','🦑','Calamar'],
+    ['food-poulpe','🐙','Poulpe']
+  ];
+
+  function normalizeEmoji(emoji) {
+    if (typeof emoji !== 'string') throw new TypeError('Icône incorrecte.');
+    // Presentation selectors are equivalent; keep ZWJ sequences such as lime intact.
+    return emoji.normalize('NFC').replace(/[\uFE0E\uFE0F]/g, '');
+  }
+
+  const seen = new Set();
+  const choices = Object.freeze([
+    ...original.map(([emoji, label]) => ({ id: emoji, emoji, label })),
+    ...additions.map(([id, emoji, label]) => ({ id, emoji, label }))
+  ].filter(choice => {
+    const key = normalizeEmoji(choice.emoji);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  }).map(choice => Object.freeze(choice)));
+
+  function choicesFor(selected) {
+    const key = normalizeEmoji(selected);
+    let matched = false;
+    const result = choices.map(choice => {
+      if (normalizeEmoji(choice.emoji) === key) {
+        matched = true;
+        // Editing another field must not rewrite an already stored emoji variant.
+        return { ...choice, emoji: selected };
+      }
+      return { ...choice };
+    });
+    if (!matched) result.push({
+      id: 'custom-' + Array.from(key, character => character.codePointAt(0).toString(16)).join('-'),
+      emoji: selected,
+      label: 'Icône actuelle'
+    });
+    return result;
+  }
+
+  root.PommeFoodIcons = Object.freeze({ choices, normalizeEmoji, choicesFor });
+})(globalThis);
+
 (function () {
   'use strict';
-  const C=globalThis.PommeCore, catalogue=globalThis.PommeFoods;
+  const C=globalThis.PommeCore,H=globalThis.PommeHistory,catalogue=globalThis.PommeFoods;
   const main=document.getElementById('main'),nav=document.getElementById('nav'),dialog=document.getElementById('dialog'),toastEl=document.getElementById('toast'),badge=document.getElementById('save-state');
+  const deviceButton=document.getElementById('local-device-indicator');
   const paths={home:'M3 10 12 3l9 7v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1Z',food:'M12 7c-7-5-11 2-8 8 2 5 4 7 8 5 4 2 6 0 8-5 3-6-1-13-8-8Zm0 0c0-4 3-5 5-5',chart:'M4 3v17h17M7 14l4-5 4 3 5-7',calendar:'M5 5h14a2 2 0 0 1 2 2v13H3V7a2 2 0 0 1 2-2Zm2-3v6M17 2v6M3 11h18',settings:'M4 7h16M4 17h16M8 4v6M16 14v6',plus:'M12 5v14M5 12h14',x:'m6 6 12 12M6 18 18 6',left:'m15 5-7 7 7 7',right:'m9 5 7 7-7 7',edit:'m4 16 11-11 4 4L8 20H4Zm10-10 4 4',trash:'M4 6h16M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7',search:'M15.5 15.5 21 21M18 10a8 8 0 1 1-16 0 8 8 0 0 1 16 0',backspace:'M9 4h12v16H9L2 12Zm3 5 6 6m0-6-6 6',star:'m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z',download:'M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5',upload:'M12 16V4m-5 5 5-5 5 5M4 16v5h16v-5',share:'M12 16V3M8 7l4-4 4 4M6 10H4v11h16V10h-2',check:'m5 12 4 4L19 6',leaf:'M20 3C9 2 2 9 5 16c7 4 15-2 15-13ZM5 19 15 9'};
   const icon=name=>'<svg class="icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+(paths[name]||paths.plus)+'"/></svg>';
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -1049,14 +1330,14 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
   const shiftDate=(date,step)=>{const d=new Date(date+'T12:00:00');d.setDate(d.getDate()+step);return C.localDate(d);};
   const uid=()=>crypto.randomUUID?crypto.randomUUID():'id-'+Date.now().toString(36)+'-'+Math.random().toString(36).slice(2);
   let state=C.blankState(),db=null,busy=false,lastToday=C.localDate(),storagePersistent=false,channel=null,toastAction=null;
-  const ui={tab:'day',date:lastToday,digits:'',entryName:'',quantity:'1',search:'',foodFilter:'all',weightDate:lastToday,weightInput:'',weightEdit:null,dialog:null,profileDraft:null,settingsSection:'overview',quotaDraft:null};
+  const ui={tab:'day',date:lastToday,historyDate:lastToday,historyMonth:lastToday.slice(0,7),digits:'',entryName:'',quantity:'1',search:'',foodFilter:'all',weightDate:lastToday,weightInput:'',weightEdit:null,dialog:null,profileDraft:null,settingsSection:'overview',quotaDraft:null};
   const allFoods=()=>[...state.foods,...catalogue.foods];
   const findFood=id=>allFoods().find(f=>f.id===id);
   const sourceHTML=source=>typeof source==='object'?'<a href="'+esc(source.url)+'" target="_blank" rel="noopener noreferrer">'+esc(source.label)+'</a>':esc(source||'Saisie personnelle');
   const basisLabel=f=>f.basis==='portion'?'par '+(f.portionName||'portion'):'pour '+(f.basis==='100ml'?'100 ml':'100 g');
   const amountUnit=f=>f.basis==='100g'?'g':f.basis==='100ml'?'ml':f.portionName||'portion';
   function tell(text,action){toastAction=action||null;toastEl.innerHTML='<span>'+esc(text)+'</span>'+(action?'<button class="toast-action" data-action="toast-action">'+esc(action.label)+'</button>':'')+'<button class="icon-btn" data-action="dismiss-toast" aria-label="Fermer le message">'+icon('x')+'</button>';toastEl.hidden=false;}
-  function setStatus(text,error=false){badge.textContent=text;badge.classList.toggle('has-error',error);}
+  function setStatus(text,error=false){badge.textContent=text;deviceButton.classList.toggle('has-error',error);deviceButton.title=error?'Mes données — '+text:'Mes données — enregistrées sur cet appareil';}
   function ensureDay(draft,date){if(!C.validDate(date)||date>C.localDate())throw Error('Choisis une date passée ou aujourd’hui.');if(!draft.days[date])draft.days[date]={limit:draft.settings.limit,entries:[]};return draft.days[date];}
   async function save(mutator,message,after){
     if(busy||!db)return false;
@@ -1095,7 +1376,44 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
   function weightView(){const rows=[...state.weights].sort((a,b)=>b.date.localeCompare(a.date)),last=C.latestWeight(state),existing=state.weights.find(w=>w.date===ui.weightDate);
     return heading('Mon poids','Une mesure, une date, mon évolution')+'<div class="weight-summary"><span class="small muted">Dernière mesure</span><strong>'+(last?kg(last.kg):'—')+' <small>kg</small></strong><span class="small muted">'+(last?fmtDate(last.date,true):'Ajoute ta première pesée')+'</span></div><svg class="weight-chart" role="img" aria-label="Évolution du poids en kilogrammes selon les dates"></svg><p class="tiny muted">Chaque point est une pesée. Les jours sans mesure ne sont pas estimés.</p><form id="weight-form" class="panel"><h2>'+(ui.weightEdit?'Modifier une pesée':'Noter une pesée')+'</h2><div class="two-col"><label class="field"><span>Date de la pesée</span><input name="date" type="date" value="'+ui.weightDate+'" max="'+C.localDate()+'" required></label><label class="field"><span>Poids · kg</span><input name="kg" type="text" inputmode="decimal" maxlength="7" placeholder="Ex. 78,3" value="'+esc(ui.weightInput)+'" required></label></div><p id="existing-weight" class="small muted">'+(existing?'Mesure existante : '+kg(existing.kg)+' kg.':'')+'</p><p class="form-error" role="alert"></p><button class="primary" type="submit" id="save-weight">'+(existing?'Mettre à jour cette pesée':'Ajouter cette pesée')+'</button>'+(ui.weightEdit?'<button type="button" class="text-btn" data-action="cancel-weight">Annuler la modification</button>':'')+'</form><div class="section-head"><h2>Mes pesées</h2><span class="small muted">'+rows.length+' mesure'+(rows.length!==1?'s':'')+'</span></div><ul class="weight-list">'+rows.map(w=>'<li class="weight-row"><time datetime="'+w.date+'">'+fmtDate(w.date,true)+' <span class="tiny muted">'+w.date.slice(0,4)+'</span></time><button class="text-btn" data-edit-weight="'+w.date+'" aria-label="Modifier la pesée du '+fmtDate(w.date,true)+'"><b>'+kg(w.kg)+' kg</b>'+icon('edit')+'</button><button class="icon-btn" data-delete-weight="'+w.date+'" aria-label="Retirer la pesée du '+fmtDate(w.date,true)+'">'+icon('trash')+'</button></li>').join('')+'</ul>';
   }
-  function historyView(){const dates=Object.keys(state.days).sort().reverse();return heading('Mes journées','Les petits ajouts font le suivi')+datebar()+'<button class="secondary" data-action="open-selected-day">Voir la journée du '+fmtDate(ui.date,true)+'</button><div class="section-head"><h2>Mon historique</h2><span class="small muted">'+dates.length+' jour'+(dates.length!==1?'s':'')+'</span></div><div class="day-list">'+(dates.length?dates.map(date=>{const d=state.days[date],total=C.dayTotal(d),budget=C.dayBudget(d),over=total>budget.total;return '<button class="day-row'+(over?' over':'')+'" data-open-day="'+date+'"><div class="row"><b>'+fmtDate(date,true)+' <span class="tiny muted">'+date.slice(0,4)+'</span></b><strong>'+num(total,2)+' <small>kcal</small></strong></div><div class="day-progress"><span style="width:'+Math.min(100,total/budget.total*100)+'%"></span></div><div class="row small muted"><span>'+d.entries.length+' ajout'+(d.entries.length!==1?'s':'')+'</span><span>Plafond '+num(budget.total)+' kcal</span></div>'+(over?'<p class="small">Plafond dépassé de '+num(total-budget.total,2)+' kcal</p>':'')+'</button>';}).join(''):'<div class="empty">Ton historique apparaîtra après ton premier ajout.</div>')+'</div><p class="small muted source-note">Chaque journée garde son plafond. Tu peux ouvrir une date passée pour corriger un oubli.</p>';}
+  function historyMarker(status){
+    const symbol=status==='ok'?'<path d="m2 6 2.5 2.5L10 3.5"/>':status==='over'?'<path d="M6 2.6v4.4"/><circle cx="6" cy="9.4" r=".9" fill="currentColor" stroke="none"/>':null;
+    return '<span class="day-marker '+status+'" aria-hidden="true">'+(symbol?'<svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+symbol+'</svg>':({missing:'–',current:'·',future:''}[status]||''))+'</span>';
+  }
+  function historyDetail(today){
+    const summary=H.daySummary(state,ui.historyDate,today),{status,hasEntries,count,total,limit,over,remaining,percent}=summary;
+    const title=(ui.historyDate===today?'Aujourd’hui · ':'')+fmtDate(ui.historyDate,true);
+    const tag=status==='current'?'En cours':hasEntries?count+' ajout'+(count!==1?'s':''):'Sans saisie';
+    let bilan='<p class="selected-status" style="margin-top:10px">Aucun aliment enregistré pour cette journée.</p>';
+    if(hasEntries){
+      const message=over?'Quota dépassé de '+num(-remaining,2)+' kcal':status==='current'?num(remaining,2)+' kcal restantes · journée en cours':remaining===0?'Quota atteint, sans dépassement':'Quota respecté · '+num(remaining,2)+' kcal sous le plafond';
+      bilan='<div class="selected-metrics"><p class="selected-total"><strong>'+num(total,2)+'</strong><small>kcal</small></p><span class="quota-label">Plafond<br><b>'+num(limit)+' kcal</b></span></div><div class="day-progress" role="progressbar" aria-label="Calories consommées par rapport au quota" aria-valuemin="0" aria-valuemax="100" aria-valuenow="'+Math.round(percent)+'" aria-valuetext="'+num(total,2)+' kcal consommées pour un plafond de '+num(limit)+' kcal"><span style="width:'+percent+'%"></span></div><p class="selected-status">'+message+'</p>';
+    }
+    return '<div class="selected-day '+status+(over&&status!=='over'?' over':'')+'"><div class="selected-day-title"><b>'+title+'</b><span class="day-tag">'+tag+'</span></div>'+bilan+'<button class="open-day" data-action="open-selected-day">Voir la journée '+icon('right')+'</button></div>';
+  }
+  function historyView(){
+    const today=C.localDate(),month=ui.historyMonth,calendar=H.monthCells(state,month,today);
+    const monthTitle=new Date(month+'-01T12:00:00').toLocaleDateString('fr-CH',{month:'long',year:'numeric'});
+    let days=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'].map(day=>'<span class="weekday">'+day+'</span>').join('')+'<span aria-hidden="true"></span>'.repeat(calendar.offset);
+    for(const day of calendar.days){
+      const labels={future:'À venir',current:'Aujourd’hui, en cours',missing:'Sans saisie',over:'Quota dépassé',ok:'Quota respecté'};
+      days+='<button type="button" class="calendar-day quota-'+day.status+(day.date===today?' today':'')+'" data-history-date="'+day.date+'" aria-label="'+fmtDate(day.date)+' — '+labels[day.status]+'" aria-pressed="'+(day.date===ui.historyDate)+'" '+(day.date===today?'aria-current="date" ':'')+(day.status==='future'?'disabled':'')+'><span>'+Number(day.date.slice(8))+'</span>'+historyMarker(day.status)+'</button>';
+    }
+    return heading('Mes journées','Les petits ajouts font le suivi')+'<section class="calendar-card" aria-label="Calendrier des calories"><div class="calendar-heading"><h2 id="history-month-title" tabindex="-1">'+monthTitle+'</h2><div class="calendar-nav"><button type="button" class="icon-btn" data-history-month="-1" aria-label="Mois précédent" '+(H.shiftMonth(month,-1)?'':'disabled')+'>'+icon('left')+'</button><button type="button" class="icon-btn" data-history-month="1" aria-label="Mois suivant" '+(month>=today.slice(0,7)?'disabled':'')+'>'+icon('right')+'</button></div></div><div class="calendar-grid">'+days+'</div><div class="calendar-legend"><span>'+historyMarker('ok')+' Quota respecté</span><span>'+historyMarker('over')+' Dépassé</span><span>'+historyMarker('missing')+' Sans saisie</span></div><p class="calendar-note">Aujourd’hui reste en cours. Touche une date pour voir son bilan.</p><div id="history-detail" aria-live="polite">'+historyDetail(today)+'</div></section>';
+  }
+  function selectHistoryDate(date){
+    if(!C.validDate(date)||date>C.localDate())return;
+    ui.historyDate=date;ui.historyMonth=date.slice(0,7);render();
+    main.querySelector('[data-history-date="'+date+'"]').focus({preventScroll:true});
+  }
+  function changeHistoryMonth(step){
+    const month=H.shiftMonth(ui.historyMonth,step),today=C.localDate();
+    if(!month||month>today.slice(0,7))return;
+    ui.historyDate=H.selectMonthDate(ui.historyDate,month,today);ui.historyMonth=month;render();
+    const button=main.querySelector('[data-history-month="'+step+'"]');
+    (button.disabled?document.getElementById('history-month-title'):button).focus({preventScroll:true});
+  }
+
   const avatarChoices=[
     ['🍎','Pomme'],['🙂','Sourire'],['😊','Joyeux'],['😎','Lunettes'],['😄','Grand sourire'],['😁','Radieux'],['🤩','Émerveillé'],['😌','Serein'],['🥰','Tendresse'],['🤓','Curieux'],['😇','Ange'],['🧑','Personne'],['👩','Femme'],['👨','Homme'],['🧔','Barbe'],['🧑‍🦳','Cheveux blancs'],
     ['🐱','Chat'],['🐶','Chien'],['🦊','Renard'],['🐼','Panda'],['🐨','Koala'],['🐻','Ours'],['🐰','Lapin'],['🐯','Tigre'],['🦁','Lion'],['🐸','Grenouille'],['🐵','Singe'],['🦉','Hibou'],['🐧','Pingouin'],['🐬','Dauphin'],['🦋','Papillon'],['🐢','Tortue'],
@@ -1109,7 +1427,7 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
   function quotaSettings(){return '<form id="quota-form" class="settings-section"><h1 class="settings-title">Mon quota quotidien</h1><p class="small muted">Choisis le plafond de calories que tu souhaites suivre chaque jour.</p>'+field('Plafond quotidien · kcal','limit',ui.quotaDraft??state.settings.limit,'number','min="1" max="20000" step="1" inputmode="numeric" required')+'<p class="form-note">La valeur initiale de 2 000 kcal est à personnaliser. Un dépassement apparaît en rouge sur ton accueil et dans ton historique.</p><p class="form-error" role="alert"></p><button type="submit" class="primary">Enregistrer mon quota</button><p class="tiny muted">Le plafond change pour aujourd’hui et les nouvelles journées. Les jours passés conservent leur valeur.</p></form>';}
   function dataSettings(){return '<section class="settings-section"><h1 class="settings-title">Mes données</h1><p class="small muted">Ton profil, tes calories, tes favoris et tes pesées restent dans ce navigateur, sur cet appareil. Aucun compte, aucune synchronisation entre téléphones.</p><div class="backup-info"><b>Ma copie de secours</b><p class="small muted">'+(state.lastBackupAt?'Dernier export préparé : '+new Date(state.lastBackupAt).toLocaleString('fr-CH'):'Aucun export préparé pour le moment.')+'</p></div><button class="secondary" data-action="export">'+icon('download')+' Exporter ma sauvegarde</button><p class="tiny muted">Télécharge une copie complète du carnet et conserve-la dans Fichiers ou iCloud Drive.</p><button class="secondary" data-action="choose-import">'+icon('upload')+' Restaurer une sauvegarde</button><input type="file" id="import-file" accept="application/json,.json" hidden><p class="tiny muted">La restauration remplace le carnet de cet appareil. Effacer les données Safari peut supprimer ton carnet ; une copie de secours permet de le retrouver.</p><button class="text-btn" data-action="persist">'+(storagePersistent?'Stockage persistant confirmé':'Demander la conservation du stockage')+'</button><p class="tiny muted">Cette demande dépend du navigateur et ne remplace pas une copie de secours.</p></section>';}
   function iphoneSettings(){return '<section class="settings-section"><h1 class="settings-title">Pomme sur mon iPhone</h1><h3>Installer un raccourci</h3><p class="install-note small">Dans Safari : ouvre le menu de partage, puis choisis « Sur l’écran d’accueil ». Ouvre ensuite Pomme depuis cette icône. Si tu changes de mode d’ouverture et que ton carnet est vide, utilise ta sauvegarde pour le transférer.</p><h3>Partager l’application</h3><button class="secondary" data-action="share">'+icon('share')+' Partager le lien de Pomme</button><p class="tiny muted">Partager le lien ne partage aucune de tes données.</p></section>';}
-  function sourceSettings(){return '<section class="settings-section"><h1 class="settings-title">Sources des aliments</h1><p class="source-note">'+sourceHTML({label:'ANSES · Table Ciqual 2025 (fichier source)',url:catalogue.sources[0].url})+'. Licence Ouverte Etalab 2.0. '+esc(catalogue.sources[0].note)+'</p><p class="small muted">Les valeurs du catalogue sont des moyennes. Pour un produit précis, reprends les calories indiquées sur son emballage.</p><p class="tiny muted">Pomme · version 6</p></section>';}
+  function sourceSettings(){return '<section class="settings-section"><h1 class="settings-title">Sources des aliments</h1><p class="source-note">'+sourceHTML({label:'ANSES · Table Ciqual 2025 (fichier source)',url:catalogue.sources[0].url})+'. Licence Ouverte Etalab 2.0. '+esc(catalogue.sources[0].note)+'</p><p class="small muted">Les valeurs du catalogue sont des moyennes. Pour un produit précis, reprends les calories indiquées sur son emballage.</p><p class="tiny muted">Pomme · version 11</p></section>';}
   function settingsView(){const views={profile:profileSettings,quota:quotaSettings,data:dataSettings,iphone:iphoneSettings,sources:sourceSettings};const view=views[ui.settingsSection];return view?'<button class="text-btn settings-back" data-settings="overview">'+icon('left')+' Réglages</button>'+view():'<div class="page-head"><h1>Réglages</h1></div>'+settingsOverview();}
   function render(){nav.innerHTML=navHTML();main.innerHTML=ui.tab==='day'?dayView():ui.tab==='foods'?foodsView():ui.tab==='weight'?weightView():ui.tab==='history'?historyView():settingsView();if(ui.tab==='weight')requestAnimationFrame(drawWeight);}
   function drawWeight(){
@@ -1132,8 +1450,11 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
   const field=(label,name,value='',type='text',extra='')=>'<label class="field"><span>'+esc(label)+'</span><input name="'+name+'" type="'+type+'" value="'+esc(value)+'" '+extra+'></label>';
   const submit=text=>'<button type="submit" class="primary">'+esc(text)+'</button>';
   function quantityControl(label,name,value,id=''){return '<div class="field quantity-field"><label for="'+(id||name)+'">'+esc(label)+'</label><div class="quantity-control"><button type="button" class="icon-btn" data-quantity-step="-1" data-target="'+(id||name)+'" aria-label="Diminuer la quantité">−</button><input id="'+(id||name)+'" name="'+name+'" type="text" inputmode="decimal" value="'+esc(value)+'" required><button type="button" class="icon-btn" data-quantity-step="1" data-target="'+(id||name)+'" aria-label="Augmenter la quantité">'+icon('plus')+'</button></div></div>';}
-  const foodIcons=[['🍽️','Assiette'],['☕','Café'],['🥛','Lait'],['🍵','Thé'],['🥤','Boisson'],['💧','Eau'],['🍎','Pomme'],['🍌','Banane'],['🍊','Orange'],['🍓','Fraise'],['🍞','Pain'],['🥐','Croissant'],['🥣','Bol'],['🥚','Œuf'],['🧀','Fromage'],['🥩','Viande'],['🍗','Poulet'],['🐟','Poisson'],['🍚','Riz'],['🍝','Pâtes'],['🥗','Salade'],['🥕','Carotte'],['🍫','Chocolat'],['🍪','Biscuit']];
-  function emojiPicker(selected){const choices=foodIcons.some(([v])=>v===selected)?foodIcons:[...foodIcons,[selected,'Icône actuelle']];return '<fieldset class="emoji-picker"><legend>Mon icône</legend>'+choices.map(([emoji,label])=>'<label class="emoji-option"><input type="radio" name="emoji" value="'+esc(emoji)+'" aria-label="'+esc(label)+'" '+(emoji===selected?'checked':'')+'><span aria-hidden="true">'+emoji+'</span></label>').join('')+'</fieldset>';}
+  function emojiPicker(selected){
+    const choices=globalThis.PommeFoodIcons.choicesFor(selected),selectedLabel=choices.find(choice=>choice.emoji===selected).label;
+    return '<fieldset class="emoji-picker food-icon-picker"><legend>Mon icône <span class="food-icon-count">'+choices.length+' au choix</span></legend>'+choices.map(({id,emoji,label})=>'<label class="emoji-option"><input type="radio" name="emoji" value="'+esc(emoji)+'" data-icon-id="'+esc(id)+'" aria-label="'+esc(label)+'" '+(emoji===selected?'checked':'')+'><span aria-hidden="true">'+emoji+'</span></label>').join('')+'<div class="food-icon-selection" aria-live="polite">Icône choisie : <span data-food-icon-label>'+esc(selectedLabel)+'</span></div></fieldset>';
+  }
+
   function portionDialog(id){const f=findFood(id);if(!f)return;modal(f.name,'<p class="small muted">'+esc(f.emoji||'🍽️')+' '+num(f.kcal,1)+' kcal '+esc(basisLabel(f))+'</p>'+quantityControl('Quantité · '+amountUnit(f),'amount',f.defaultAmount)+field('Date de consommation','date',ui.date,'date','max="'+C.localDate()+'" required')+'<div class="portion-result"><strong id="portion-total">'+num(C.portionCalories(f,f.defaultAmount),1)+'</strong> kcal</div><p class="source-note">'+sourceHTML(f.source)+'</p>',submit('Ajouter à cette journée'),'portion-form',{foodId:id});}
 
   function foodDialog(id){const f=id?state.foods.find(x=>x.id===id):null;if(id&&!f)return;const favorite=f?state.settings.favoriteIds.includes(f.id):state.settings.favoriteIds.length<C.MAX_FAVORITES,full=state.settings.favoriteIds.length>=C.MAX_FAVORITES&&!favorite;modal(f?'Modifier mon aliment':'Mon nouvel aliment',field('Nom','name',f?.name||'','text','maxlength="120" required')+emojiPicker(f?.emoji||'🍽️')+field('Calories de référence · kcal','kcal',f?.kcal??'','text','inputmode="decimal" required')+'<label class="field"><span>Ces calories correspondent à</span><select name="basis" aria-label="Ces calories correspondent à">'+[['portion','1 portion'],['100g','100 grammes'],['100ml','100 millilitres']].map(([v,t])=>'<option value="'+v+'" '+((f?.basis||'portion')===v?'selected':'')+'>'+t+'</option>').join('')+'</select></label>'+field('Nom de la portion (si applicable)','portionName',f?.portionName||'portion','text','maxlength="80"')+field('Quantité proposée lors d’un ajout','defaultAmount',f?.defaultAmount??1,'text','inputmode="decimal" required')+'<p class="form-note">Exemple : café au lait, 40 kcal pour 1 tasse. Au moment de l’ajout, choisis 3 tasses pour enregistrer 120 kcal.</p><label class="favorite-choice"><input type="checkbox" name="favorite" '+(favorite?'checked':'')+' '+(full?'disabled':'')+'> Afficher dans mes favoris</label><p class="favorite-limit small muted">'+favoriteLimitText()+'</p>',submit('Enregistrer cet aliment')+(f?'<button type="button" class="text-btn danger" data-delete-food="'+esc(id)+'">Supprimer cet aliment</button>':''),'food-form',{foodId:id||null});}
@@ -1161,7 +1482,7 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
     if(t.closest('#weight-form')){if(t.name==='kg')ui.weightInput=t.value;if(t.name==='date'){ui.weightDate=t.value;updateWeightHint();}}
     if(t.closest('#portion-form')&&t.name==='amount'){const f=findFood(ui.dialog?.foodId),amount=C.decimal(t.value);try{document.getElementById('portion-total').textContent=Number.isFinite(amount)&&amount>0?num(C.portionCalories(f,amount),1):'—';dialog.querySelector('.form-error').textContent='';}catch(error){document.getElementById('portion-total').textContent='—';errorIn(dialog.querySelector('form'),error);}}
   });
-  document.addEventListener('change',e=>{const t=e.target;if(t.id==='day-date'){try{ui.date=checkedDate(t.value);render();}catch(error){tell(error.message);t.value=ui.date;}}if(t.id==='import-file')prepareImport(t.files[0]);if(t.closest('#food-form')&&t.name==='basis'){const form=t.closest('form');form.elements.defaultAmount.value=t.value==='portion'?'1':'100';}});
+  document.addEventListener('change',e=>{const t=e.target;if(t.id==='day-date'){try{ui.date=checkedDate(t.value);render();}catch(error){tell(error.message);t.value=ui.date;}}if(t.id==='import-file')prepareImport(t.files[0]);if(t.closest('#food-form')&&t.name==='basis'){const form=t.closest('form');form.elements.defaultAmount.value=t.value==='portion'?'1':'100';}if(t.closest('#food-form')&&t.name==='emoji')t.closest('form').querySelector('[data-food-icon-label]').textContent=t.getAttribute('aria-label');});
   document.addEventListener('click',async e=>{
     const b=e.target.closest('button');if(!b)return;
     if(b.dataset.settings){ui.settingsSection=b.dataset.settings;go('settings');return;}
@@ -1169,6 +1490,8 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
     const a=b.dataset.action;
     if(a==='close-dialog'){closeDialog();return;}if(a==='dismiss-toast'){toastEl.hidden=true;return;}
     if(busy)return;
+    if(b.dataset.historyDate){selectHistoryDate(b.dataset.historyDate);return;}
+    if(b.dataset.historyMonth){changeHistoryMonth(Number(b.dataset.historyMonth));return;}
     if(b.dataset.quantityStep){const input=document.getElementById(b.dataset.target),current=C.decimal(input.value),next=(Number.isFinite(current)?current:0)+Number(b.dataset.quantityStep);if(next>0&&next<=100000){input.value=String(Math.round(next*100)/100);input.dispatchEvent(new Event('input',{bubbles:true}));}return;}
     if(b.dataset.key){const k=b.dataset.key;ui.digits=k==='C'?'':k==='delete'?ui.digits.slice(0,-1):(ui.digits==='0'?'':ui.digits)+k;ui.digits=ui.digits.slice(0,5);updateQuick();return;}
     if(b.dataset.portion){portionDialog(b.dataset.portion);return;}
@@ -1182,7 +1505,7 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
     if(b.dataset.deleteWeight){const date=b.dataset.deleteWeight;let removed;const ok=await save(d=>{const i=d.weights.findIndex(w=>w.date===date);if(i<0)throw Error('Cette pesée n’existe plus.');removed=d.weights.splice(i,1)[0];},null,()=>{if(ui.weightEdit===date){ui.weightEdit=null;ui.weightDate=C.localDate();ui.weightInput='';}});if(ok)tell('Pesée retirée.',{label:'Annuler',run:()=>save(d=>{if(d.weights.some(w=>w.date===date))throw Error('Une pesée existe déjà à cette date.');d.weights.push(removed);},'Pesée rétablie.')});return;}
     if(b.dataset.deleteFood){const f=findFood(b.dataset.deleteFood);modal('Supprimer cet aliment ?','<p>'+esc(f.name)+'</p><p class="small muted">Les calories déjà ajoutées à ton historique seront conservées.</p>',submit('Supprimer cet aliment')+'<button type="button" class="text-btn" data-action="close-dialog">Annuler</button>','delete-food-form',{foodId:f.id});return;}
     if(a==='new-food')foodDialog();
-    if(a==='previous-day'){ui.date=shiftDate(ui.date,-1);render();}if(a==='next-day'&&ui.date<C.localDate()){ui.date=shiftDate(ui.date,1);render();}if(a==='today'){ui.date=C.localDate();render();}if(a==='open-selected-day')go('day');
+    if(a==='previous-day'){ui.date=shiftDate(ui.date,-1);render();}if(a==='next-day'&&ui.date<C.localDate()){ui.date=shiftDate(ui.date,1);render();}if(a==='today'){ui.date=C.localDate();render();}if(a==='open-selected-day'){ui.date=ui.historyDate;go('day');}
     if(a==='add-calories'&&quickTotal()!==null){const quantity=C.decimal(ui.quantity),unitKcal=Number(ui.digits),entry={id:uid(),name:ui.entryName.trim()||'Ajout libre',portion:'',kcal:C.quantityCalories(unitKcal,quantity),quantity,unitKcal,quantityUnit:'portion',createdAt:new Date().toISOString()},date=ui.date;await save(d=>{ensureDay(d,date).entries.push(entry);},'Calories ajoutées.',()=>{ui.digits='';ui.entryName='';ui.quantity='1';});}
     if(a==='cancel-weight'){ui.weightEdit=null;ui.weightDate=C.localDate();ui.weightInput='';render();}
     if(a==='export')await exportBackup();if(a==='choose-import')document.getElementById('import-file').click();
@@ -1207,8 +1530,8 @@ dialog#dialog::backdrop { background: #0b201a66; -webkit-backdrop-filter: blur(4
     }catch(error){errorIn(form,error);}
   });
   dialog.addEventListener('cancel',()=>{ui.dialog=null;});
-  async function refresh(){if(busy||!db)return;try{const latest=await C.readDB(db);if(latest&&latest.updatedAt!==state.updatedAt){state=latest;render();}const today=C.localDate();if(today!==lastToday){if(ui.date===lastToday&&!ui.digits&&!ui.entryName)ui.date=today;if(ui.weightDate===lastToday&&!ui.weightInput&&!ui.weightEdit)ui.weightDate=today;lastToday=today;render();}}catch{setStatus('Relecture impossible',true);}}
-  async function start(){try{db=await C.openDB();const existing=await C.readDB(db);if(existing)state=existing;else{state.settings.favoriteIds=['ciqual-13039','ciqual-19593','ciqual-7110'];await C.writeDB(db,state);}storagePersistent=!!(await navigator.storage?.persisted?.());render();setStatus('Sur cet appareil');if('BroadcastChannel' in window){channel=new BroadcastChannel('pomme-data');channel.onmessage=refresh;}window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});setInterval(refresh,60000);if('serviceWorker'in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(error){setStatus('Stockage indisponible',true);main.innerHTML='<div class="error-panel"><h1>Ton carnet ne peut pas s’ouvrir</h1><p>Pomme a besoin du stockage de ce navigateur pour conserver tes données. Vérifie que le stockage du site est autorisé, puis réessaie.</p><p class="small muted">'+esc(error.message)+'</p><button class="primary" data-action="retry">Réessayer</button></div>';}}
+  async function refresh(){if(busy||!db)return;try{const latest=await C.readDB(db);if(latest&&latest.updatedAt!==state.updatedAt){state=latest;render();}const today=C.localDate();if(today!==lastToday){if(ui.historyDate===lastToday){ui.historyDate=today;ui.historyMonth=today.slice(0,7);}if(ui.date===lastToday&&!ui.digits&&!ui.entryName)ui.date=today;if(ui.weightDate===lastToday&&!ui.weightInput&&!ui.weightEdit)ui.weightDate=today;lastToday=today;render();}}catch{setStatus('Relecture impossible',true);}}
+  async function start(){deviceButton.disabled=true;try{db=await C.openDB();const existing=await C.readDB(db);if(existing)state=existing;else{state.settings.favoriteIds=['ciqual-13039','ciqual-19593','ciqual-7110'];await C.writeDB(db,state);}storagePersistent=!!(await navigator.storage?.persisted?.());deviceButton.disabled=false;render();setStatus('Sur cet appareil');if('BroadcastChannel' in window){channel=new BroadcastChannel('pomme-data');channel.onmessage=refresh;}window.addEventListener('focus',refresh);document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')refresh();});setInterval(refresh,60000);if('serviceWorker'in navigator&&(location.protocol==='https:'||['localhost','127.0.0.1'].includes(location.hostname)))navigator.serviceWorker.register('./sw.js').catch(()=>{});}catch(error){deviceButton.disabled=true;setStatus('Stockage indisponible',true);main.innerHTML='<div class="error-panel"><h1>Ton carnet ne peut pas s’ouvrir</h1><p>Pomme a besoin du stockage de ce navigateur pour conserver tes données. Vérifie que le stockage du site est autorisé, puis réessaie.</p><p class="small muted">'+esc(error.message)+'</p><button class="primary" data-action="retry">Réessayer</button></div>';}}
   start();
 })();
 </script>

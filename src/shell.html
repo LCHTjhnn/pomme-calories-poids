@@ -19,8 +19,11 @@
 <body>
   <div class="app">
     <header class="topbar">
-      <a class="brand" href="./" aria-label="Pomme, accueil"><img class="brand-icon" src="./icon.svg" width="80" height="80" alt=""><span>Pomme<span class="brand-caption">MON CARNET QUOTIDIEN</span></span></a>
-      <span class="save-state" id="save-state" role="status">Ouverture…</span>
+      <div class="brand">
+        <a class="brand-logo-link" href="./" aria-label="Pomme, accueil"><img class="brand-icon" src="./icon.svg" width="80" height="80" alt=""></a>
+        <div class="brand-copy"><a class="brand-name" href="./">Pomme</a><div class="brand-caption"><span>MON CARNET QUOTIDIEN</span><button type="button" class="local-device-indicator" id="local-device-indicator" data-settings="data" aria-label="Mes données — enregistrées sur cet appareil" aria-describedby="save-state" title="Mes données — enregistrées sur cet appareil" disabled><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="3"/><path d="M10 5h4M11 18h2"/></svg></button></div></div>
+      </div>
+      <span class="sr-only" id="save-state" role="status">Ouverture du carnet sur cet appareil…</span>
     </header>
     <main id="main"><div class="empty"><h1>Bienvenue dans Pomme</h1><p>Ouverture de ton carnet…</p></div></main>
     <nav class="tabbar" id="nav" aria-label="Navigation principale"></nav>
