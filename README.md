@@ -131,4 +131,4 @@ Les cinq options de réglage ont été inspectées visuellement, ainsi que le pr
 
 ## Licence
 
-© 2026 Johann Lachat. Tous droits réservés. Voir [LICENSE](LICENSE).
+Pomme est un logiciel libre, distribué sous licence MIT : chacun peut l'utiliser, le copier, le modifier et le redistribuer librement, en conservant la mention de copyright. © 2026 Johann Lachat. Voir [LICENSE](LICENSE).
