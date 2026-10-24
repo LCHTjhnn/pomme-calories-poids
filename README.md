@@ -128,3 +128,7 @@ La page Réglages présente cinq options directes avec leurs icônes, sans menu 
 La reprise de l’ancien carnet conserve neuf favoris et six consommations totalisant 2 415,19 kcal, avec un plafond de 2 200 kcal. L’export au format 3 a été comparé à la sauvegarde précédente : journées et aliments identiques, favoris, quotas et anciens champs d’âge, de sexe, de taille et d’activité conservés. Seules les modifications volontaires du test — nom, avatar et pesée — changent les données concernées.
 
 Les cinq options de réglage ont été inspectées visuellement, ainsi que le profil et sa grille d’avatars à 320 pixels et l’accueil à 320 et 390 pixels. Aucun essai sur iPhone physique n’a été effectué.
+
+## Licence
+
+© 2026 Johann Lachat. Tous droits réservés. Voir [LICENSE](LICENSE).
